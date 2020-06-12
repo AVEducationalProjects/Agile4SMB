@@ -1,0 +1,52 @@
+@startuml Диаграмма вариантов использования
+
+left to right direction
+
+actor "Администратор" as admin
+
+usecase "Сформировать дерево исполнителей" as UCExecutorTree
+
+(Добавить подразделение) .u.> UCExecutorTree : extends
+(Редактировать подразделение) .u.> UCExecutorTree : extends
+(Пометить на удаление подразделение) .u.> UCExecutorTree : extends
+
+(Добавить сотрудника) .u.> UCExecutorTree : extends
+(Редактировать сотрудника) .u.> UCExecutorTree : extends
+(Пометить на удаление сотрудника) .u.> UCExecutorTree : extends
+
+admin -- UCExecutorTree
+
+usecase "Управление целями" as USPurposeManagement
+USPurposeManagement <.. (Создать цель) : extends
+USPurposeManagement <.. (Отредакировать цель) : extends
+
+admin -- USPurposeManagement
+
+actor "Сотрудник" as user
+admin -|> user
+
+usecase "Управление беклогом" as UCBacklogManagement
+UCBacklogManagement <.. (Создать беклог) : extends
+UCBacklogManagement <.. (Включить проект в беклог) : extends
+UCBacklogManagement <.. (Приоритизировать беклог) : extends
+UCBacklogManagement <.. (Отредактировать параметры беклога) : extends
+
+user -- UCBacklogManagement
+
+
+usecase "Управление проектами" as UCProjectManagement
+UCProjectManagement <.. (Создать проект) : extends
+UCProjectManagement <.. (Отредактировать проект) : extends
+UCProjectManagement <.. (Изменить статус проекта) : extends
+
+user -- UCProjectManagement
+
+usecase "Управление задачами" as UCTaskManagement
+UCTaskManagement <.. (Создать задачу) : extends
+UCTaskManagement <.. (Отредактировать задачу) : extends
+UCTaskManagement <.. (Изменить статус задачи) : extends
+UCTaskManagement <.. (Удалить задачу) : extendss
+
+user -- UCTaskManagement
+
+@enduml

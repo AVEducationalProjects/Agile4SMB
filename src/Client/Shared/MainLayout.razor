@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+<button type="button" class="mobile-nav-toggle d-xl-none"><i class="oi oi-menu"></i></button>
+
+<header id="header" class="d-flex flex-column justify-content-center">
+    <nav class="nav-menu">
+        <ul>
+            <li class="active"><a href="/backlog"><i class="oi oi-list-rich"></i> <span>Проекты</span></a></li>
+            <li><a href="/organization"><i class="oi oi-people"></i> <span>Организация</span></a></li>
+            <li><a href="/goals"><i class="oi oi-fire"></i> <span>Цели</span></a></li>
+        </ul>
+    </nav>
+</header>
+
+<main id="main">
+    @Body
+</main>

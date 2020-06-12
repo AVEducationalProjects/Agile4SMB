@@ -1,0 +1,14 @@
+@startuml Навигация
+
+[*] --> Login
+
+Login --> Dashboard
+Dashboard --> Backlog
+
+Backlog -> Sprint
+Sprint -> Backlog
+
+Dashboard -> HieararchyView
+Dashboard -l-> Purposes
+
+@enduml

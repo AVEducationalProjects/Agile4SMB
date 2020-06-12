@@ -1,0 +1,65 @@
+@startuml Диаграмма концептуальных классов
+
+class "Цель" as Purpose {
+    Название
+    Описание
+}
+
+abstract class "Элемент плана" as PlanItem {
+    Название
+    Срок?
+}
+
+class "Проект" as Project {
+}
+enum "Статусы проекта" as ProjectStatus{
+    Новый
+    Согласован
+    В работе
+    Приостановлен
+    Завершен
+    Отменен
+}
+class "Смена статуса" as ProjectStatusChange{
+    Дата
+    Старый статус
+}
+Project "*"-->"1" ProjectStatus : Текущий статус
+Project "1"-->"*" ProjectStatusChange : история \nсмены статусов
+ProjectStatusChange "*"->"1" ProjectStatus : старый статус
+Project "*"-->"*" Purpose : выполняется для
+Project -u-|> PlanItem
+
+class "Задача" as Task {
+    Оценка
+}
+enum "Статусы задачи" as TaskStatus{
+    Новая
+    В процессе
+    Сделана
+}
+Project o-r- Task
+Task --> TaskStatus : Статус
+Task -u-|> PlanItem
+
+
+abstract class "Исполнитель" as Executor {
+    Название
+}
+
+PlanItem "*" <-r- "1" Executor : Отвечает за выполнение 
+
+class "Подразделение" as Division 
+class "Сотрудник" as Employee
+
+Division -u-|> Executor
+Division o-- Executor
+Employee -u-|> Executor
+
+class "Беклог" as Backlog{
+    Название
+}
+Backlog o-- Project
+Backlog "*" <-- "1" Executor : принадлежит
+
+@enduml
