@@ -2,6 +2,89 @@
 @page "/backlog"
 @inject NavigationManager NavigationManager
 
+
+<div class="row">
+    <div class="col-5">
+        <form>
+            <div class="form-group">
+                <select class="form-control">
+                    <option value="value">Беклог 1</option>
+                    <option value="value">Беклог 2</option>
+                    <option value="value">Беклог 3</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="list-group">
+
+            <a href="#" class="list-group-item list-group-item-action active">
+                <div class="d-flex w-100 justify-content-between">
+                    <small>БМ "Управление сервисом"</small>
+                    <small class="badge badge-pill badge-light">в&nbsp;работе</small>
+                </div>
+                <p class="mb-1 pt-2">Оценка текущего бэклога ICL (не мобильные приложения)</p>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="col-7">
+        <form>
+            <div class="form-group">
+                <label for="projectName">Название проекта</label>
+                <textarea class="form-control" id="projectName" rows="3">Оценка текущего бэклога ICL (не мобильные приложения)</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="projectPurpose">Соответствие целям</label>
+                <ul>
+                    <li>Получение прибыли с имеющихся клиентов в размере 10 млн. руб.</li>
+                    <li>Развитие продуктовой линейки FSM</li>
+                </ul>
+
+                <button id="projectPurpose" class="btn btn-light">Определить соответствие целям</button>
+            </div>
+
+            <div class="form-group">
+                <label for="projectAssignee">Ответственный</label>
+                <select id="projectAssignee" class="form-control">
+                    <option value="value">БМ "Управление сервисом"</option>
+                    <option value="value">БМ "Производство"</option>
+                    <option value="value">Коммерческий департамент</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label for="projectAssignee">Задачи</label>
+                <div class="list-group">
+                    <div class="form-row">
+                        <div class="form-group col-1">
+                            <input class="form-control form-control-sm" type="checkbox" />
+                        </div>
+                        <div class="form-group col-6">
+                            <input class="form-control form-control-sm" type="text" />
+                        </div>
+                        <div class="form-group col-4">
+                            <select class="form-control form-control-sm">
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-1 text-right">
+                            <button class="btn btn-sm btn-danger"><i class="oi oi-delete"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="addTask" class="btn btn-light">Добавить задачу</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
 @code{
 
 }

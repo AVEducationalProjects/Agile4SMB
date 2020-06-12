@@ -15,7 +15,7 @@ namespace Agile4SMB.Client.Services
         /// <returns>List of backlog metadata</returns>
         public IEnumerable<BacklogDTO> GetBacklogs()
         {
-            return new[] { new BacklogDTO { Name = "Беклог 1", OrganizationUnit = new OrganizationUnitDTO { Id = 1, Name = "Коммерческий департамент" } } };
+            return new[] { new BacklogDTO { Name = "backlog", OrganizationUnit = new OrganizationUnitDTO { Id = 1, Name = "Коммерческий департамент" } } };
         }
     }
 }
