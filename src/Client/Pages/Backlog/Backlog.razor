@@ -1,0 +1,33 @@
+﻿@inherits BacklogBase
+
+@page "/"
+@page "/backlog"
+
+@using Agile4SMB.Shared
+
+@inject NavigationManager NavigationManager
+
+<div class="row">
+    <div class="col-5">
+
+        <BacklogsDropdown Unit="@UserService.CurrentUnit"
+                          @bind-SelectedBacklog="@CurrentBacklog" />
+
+        <div class="d-flex w-100 justify-content-between mb-2">
+            <p class="h5">Проекты</p>
+            <button class="btn btn-sm btn-success" @onclick="@AddProject"><i class="oi oi-project" />&nbsp;Новый</button>
+        </div>
+
+        <BacklogItemList BacklogDefinition="@CurrentBacklog" @bind-SelectedProject="@CurrentProject" />
+
+    </div>
+
+    <div class="col-7">
+        <div class="sticky-top">
+            <ProjectProperties Project="@CurrentProject" />
+        </div>
+    </div>
+</div>
+
+@code{
+}

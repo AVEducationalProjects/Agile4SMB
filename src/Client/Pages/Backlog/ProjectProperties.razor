@@ -1,0 +1,68 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+
+@inject UserService UserService
+
+@if (Project != null)
+{
+    <EditForm Model = "@Project">
+        <div class="form-group">
+            <label for="projectName">Название проекта</label>
+            <InputTextArea id="projectName" class="form-control" @bind-Value="@Project.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="projectPurpose">Соответствие целям</label>
+            <ul>
+                <li>Получение прибыли с имеющихся клиентов в размере 10 млн. руб.</li>
+                <li>Развитие продуктовой линейки FSM</li>
+            </ul>
+
+            <button id="projectPurpose" class="btn btn-light">Определить соответствие целям</button>
+        </div>
+
+        <div class="form-group">
+            <label for="projectAssignee">Ответственный</label>
+            <select id="projectAssignee" class="form-control" @bind="@Project.UnitId">
+                @foreach (var unit in UserService.GetOrganizationUnits())
+                {
+                    <option value=@unit.Id>@unit.Name</option>
+                }
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label for="projectAssignee">Задачи</label>
+            <div class="list-group">
+                <div class="form-row">
+                    <div class="form-group col-1">
+                        <input class="form-control form-control-sm" type="checkbox" />
+                    </div>
+                    <div class="form-group col-6">
+                        <input class="form-control form-control-sm" type="text" />
+                    </div>
+                    <div class="form-group col-4">
+                        <select class="form-control form-control-sm">
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-1 text-right">
+                        <button class="btn btn-sm btn-danger"><i class="oi oi-delete"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="addTask" class="btn btn-light">Добавить задачу</button>
+        </div>
+
+    </EditForm>
+}
+
+@code {
+
+    [Parameter]
+    public ProjectDTO Project { get; set; }
+}

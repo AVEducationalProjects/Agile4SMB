@@ -1,0 +1,58 @@
+﻿@using Agile4SMB.Shared
+
+<div class="form-group">
+    <select class="form-control" @bind="SelectedBacklogId" >
+        @foreach (var (id, name, unit) in BacklogList)
+        {
+            <option value=@id>@name (@unit)</option>
+        }
+    </select>
+</div>
+
+@code {
+
+    [Parameter]
+    public OrganizationUnitDTO Unit { get; set; }
+
+    [Parameter]
+    public BacklogDefinitionDTO SelectedBacklog
+    {
+        get => _selectedBacklog;
+        set
+        {
+            _selectedBacklog = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<BacklogDefinitionDTO> SelectedBacklogChanged { get; set; }
+
+
+    private IEnumerable<(long id, string name, string unit)> BacklogList { get; set; }
+
+    private long _selectedBacklogId;
+    private BacklogDefinitionDTO _selectedBacklog;
+
+    private long SelectedBacklogId
+    {
+        get => _selectedBacklogId;
+        set
+        {
+            _selectedBacklogId = value;
+
+            var backlog = Unit.GetAvailableBacklogs().Single(x => x.backlog.Id == _selectedBacklogId).backlog;
+
+            SelectedBacklogChanged.InvokeAsync(backlog);
+        }
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        BacklogList = Unit.GetAvailableBacklogs().Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
+        
+        _selectedBacklogId = SelectedBacklog?.Id ?? (BacklogList?.FirstOrDefault().id??0);
+        
+        return base.OnParametersSetAsync();
+    }
+
+}
