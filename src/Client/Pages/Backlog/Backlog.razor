@@ -11,14 +11,15 @@
     <div class="col-5">
 
         <BacklogsDropdown Unit="@UserService.CurrentUnit"
-                          @bind-SelectedBacklog="@CurrentBacklog" />
+                          SelectObserver="@this" />
 
         <div class="d-flex w-100 justify-content-between mb-2">
             <p class="h5">Проекты</p>
             <button class="btn btn-sm btn-success" @onclick="@AddProject"><i class="oi oi-project" />&nbsp;Новый</button>
         </div>
 
-        <BacklogItemList BacklogDefinition="@CurrentBacklog" @bind-SelectedProject="@CurrentProject" />
+        <BacklogItemList BacklogDefinition="@CurrentBacklog" 
+                         SelectObserver="@this" />
 
     </div>
 

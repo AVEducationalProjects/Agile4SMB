@@ -1,0 +1,24 @@
+﻿@inherits OrganizationBase
+
+@page "/organization"
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Shared
+
+@inject UserService UserService
+
+<div class="row">
+    <div class="col-5">
+        <OrganizationUnit Unit="@UserService.CurrentUnit" SelectObserver="@this" />
+    </div>
+
+    <div class="col-7">
+        <div class="sticky-top">
+        </div>
+    </div>
+
+</div>
+
+
+@code{
+
+}

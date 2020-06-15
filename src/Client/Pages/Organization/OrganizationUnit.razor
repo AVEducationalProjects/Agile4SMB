@@ -1,0 +1,37 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+
+<div class="pl-4 list-group-item list-group-item-action @(Unit==SelectObserver.Item?"active":"")">
+    <div class="d-flex w-100 justify-content-between mb-2"
+         @onclick="@(e => SelectUnit(Unit))">
+        <p class="h6">@Unit.Name</p>
+        <button class="btn btn-sm btn-link" @onclick="()=>AddChild(Unit)"><i class="oi oi-plus" /></button>
+    </div>
+    
+
+    @foreach (var child in Unit.Children)
+    {
+        <OrganizationUnit Unit="@child" SelectObserver="@SelectObserver"/>
+    }
+
+</div>
+
+@code {
+
+    [Parameter] public ISelectObserver<OrganizationUnitDTO> SelectObserver { get; set; }
+    [Parameter] public OrganizationUnitDTO Unit { get; set; }
+
+    private void AddChild(OrganizationUnitDTO unit)
+    {
+        UserService.AddChildOrganizationUnit(unit, "Новое подразделение");
+        StateHasChanged();
+    }
+
+    private void SelectUnit(OrganizationUnitDTO unit)
+    {
+        Console.WriteLine($"Select unit {unit.Name}");
+        SelectObserver.Select(unit);
+    }
+
+}

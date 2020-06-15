@@ -1,58 +1,40 @@
 ﻿@using Blazor.DragDrop.Core
 @using Agile4SMB.Shared
 @using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
 
 @inject UserService UserService
 
-<Dropzone>
 
-    <div class="list-group">
+<div class="list-group">
 
-        @foreach (var project in Projects)
-        {
-            <Draggable>
-                <div class="list-group-item list-group-item-action @(project==activeProject?"active":"")"
-                     @onclick="@(e => SelectProject(project))">
-                    <div class="d-flex w-100 justify-content-between">
-                        <small>@UserService.GetOrganizationUnit(project.UnitId).Name</small>
-                        <small class="badge badge-pill badge-light">в&nbsp;работе</small>
-                    </div>
-                    <p class="mb-1 pt-2">@project.Name</p>
-                </div>
-            </Draggable>
-        }
-    </div>
-</Dropzone>
+    @foreach (var project in _projects)
+    {
+        <div class="list-group-item list-group-item-action @(project==SelectObserver.Item?"active":"")"
+             @onclick="@(e => SelectObserver.Select(project))">
+            <div class="d-flex w-100 justify-content-between">
+                <small>@UserService.GetOrganizationUnit(project.UnitId).Name</small>
+                <small class="badge badge-pill badge-light">в&nbsp;работе</small>
+            </div>
+            <p class="mb-1 pt-2">@project.Name</p>
+        </div>
+    }
+</div>
 
 @code {
 
-    [Parameter]
-    public BacklogDefinitionDTO BacklogDefinition { get; set; }
+    [Parameter] public BacklogDefinitionDTO BacklogDefinition { get; set; }
 
-    [Parameter]
-    public ProjectDTO SelectedProject { get; set; }
-
-    [Parameter]
-    public EventCallback<ProjectDTO> SelectedProjectChanged { get; set; }
-
-    private IEnumerable<ProjectDTO> Projects { get; set; }
+    [Parameter] public ISelectObserver<ProjectDTO> SelectObserver { get; set; }
+    
+    private IEnumerable<ProjectDTO> _projects;
 
     protected override Task OnParametersSetAsync()
     {
-        SelectedProject = null;
         var backlog = UserService.GetBacklog(BacklogDefinition);
-        Projects = backlog.Projects;
+        _projects = backlog.Projects;
 
         return base.OnParametersSetAsync();
-    }
-
-    private ProjectDTO activeProject;
-
-    void SelectProject(ProjectDTO project)
-    {
-        SelectedProject = project;
-        activeProject = project;
-        SelectedProjectChanged.InvokeAsync(project);
     }
 
 }

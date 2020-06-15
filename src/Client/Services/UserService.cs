@@ -14,17 +14,17 @@ namespace Agile4SMB.Client.Services
         {
             Id = 1,
             Name = "Adeptik",
-            Backlogs = new[]
+            Backlogs = new List<BacklogDefinitionDTO>
             {
                 new BacklogDefinitionDTO {Id = 1, Name = "Основной"}
             },
-            Children = new[]
+            Children = new List<OrganizationUnitDTO>
             {
                 new OrganizationUnitDTO
                 {
                     Id = 11,
                     Name = "Коммерческий департамент",
-                    Backlogs = new[] {new BacklogDefinitionDTO {Id = 2, Name = "Основной-1"}}
+                    Backlogs = new List<BacklogDefinitionDTO> {new BacklogDefinitionDTO {Id = 2, Name = "Основной-1"}}
                 },
                 new OrganizationUnitDTO {Id = 2, Name = "Технический департамент"},
                 new OrganizationUnitDTO {Id = 3, Name = "БН \"Сервис\""},
@@ -101,6 +101,11 @@ namespace Agile4SMB.Client.Services
 
                 return result;
             }
+        }
+
+        public static void AddChildOrganizationUnit(OrganizationUnitDTO unit, string name)
+        {
+            ((IList<OrganizationUnitDTO>)unit.Children).Add(new OrganizationUnitDTO { Name = name });
         }
     }
 }

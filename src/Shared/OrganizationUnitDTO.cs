@@ -15,8 +15,8 @@ namespace Agile4SMB.Shared
 
         public OrganizationUnitDTO()
         {
-            Backlogs = new BacklogDefinitionDTO[] { };
-            Children = new OrganizationUnitDTO[] { };
+            Backlogs = new List<BacklogDefinitionDTO>();
+            Children = new List<OrganizationUnitDTO>();
         }
 
         /// <summary>

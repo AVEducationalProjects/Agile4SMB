@@ -1,8 +1,9 @@
 ﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Utils
 
 <div class="form-group">
-    <select class="form-control" @bind="SelectedBacklogId" >
-        @foreach (var (id, name, unit) in BacklogList)
+    <select class="form-control" @bind="SelectedBacklogId">
+        @foreach (var (id, name, unit) in _backlogList)
         {
             <option value=@id>@name (@unit)</option>
         }
@@ -11,27 +12,14 @@
 
 @code {
 
-    [Parameter]
-    public OrganizationUnitDTO Unit { get; set; }
+    [Parameter] public OrganizationUnitDTO Unit { get; set; }
 
-    [Parameter]
-    public BacklogDefinitionDTO SelectedBacklog
-    {
-        get => _selectedBacklog;
-        set
-        {
-            _selectedBacklog = value;
-        }
-    }
+    [Parameter] public ISelectObserver<BacklogDefinitionDTO> SelectObserver { get; set; }
 
-    [Parameter]
-    public EventCallback<BacklogDefinitionDTO> SelectedBacklogChanged { get; set; }
-
-
-    private IEnumerable<(long id, string name, string unit)> BacklogList { get; set; }
 
     private long _selectedBacklogId;
     private BacklogDefinitionDTO _selectedBacklog;
+    private IEnumerable<(long id, string name, string unit)> _backlogList;
 
     private long SelectedBacklogId
     {
@@ -41,17 +29,18 @@
             _selectedBacklogId = value;
 
             var backlog = Unit.GetAvailableBacklogs().Single(x => x.backlog.Id == _selectedBacklogId).backlog;
-
-            SelectedBacklogChanged.InvokeAsync(backlog);
+            SelectObserver.Select(backlog);
         }
     }
 
     protected override Task OnParametersSetAsync()
     {
-        BacklogList = Unit.GetAvailableBacklogs().Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
-        
-        _selectedBacklogId = SelectedBacklog?.Id ?? (BacklogList?.FirstOrDefault().id??0);
-        
+        _backlogList = Unit
+            .GetAvailableBacklogs()
+            .Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
+
+        _selectedBacklogId = SelectObserver.Item?.Id ?? (_backlogList?.FirstOrDefault().id ?? 0);
+
         return base.OnParametersSetAsync();
     }
 
