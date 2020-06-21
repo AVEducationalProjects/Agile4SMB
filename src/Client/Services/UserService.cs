@@ -103,9 +103,63 @@ namespace Agile4SMB.Client.Services
             }
         }
 
-        public static void AddChildOrganizationUnit(OrganizationUnitDTO unit, string name)
+        public static OrganizationUnitDTO AddChildOrganizationUnit(OrganizationUnitDTO unit, string name)
         {
-            ((IList<OrganizationUnitDTO>)unit.Children).Add(new OrganizationUnitDTO { Name = name });
+            var newUnit = new OrganizationUnitDTO { Name = name };
+            ((IList<OrganizationUnitDTO>)unit.Children).Add(newUnit);
+            return newUnit;
+        }
+
+        public OrganizationUnitDTO DeleteOrganizationUnit(OrganizationUnitDTO unit)
+        {
+            if (_rootUnit == unit)
+                return _rootUnit;
+
+            var parentUnit = FindParentUnit(_rootUnit, unit);
+            ((IList<OrganizationUnitDTO>)parentUnit.Children).Remove(unit);
+            return parentUnit;
+
+            static OrganizationUnitDTO FindParentUnit(OrganizationUnitDTO baseUnit, OrganizationUnitDTO unitToFind)
+            {
+                if (baseUnit.Children.Contains(unitToFind))
+                    return baseUnit;
+
+                return baseUnit
+                    .Children
+                    .Select(child =>
+                        FindParentUnit(child, unitToFind))
+                    .FirstOrDefault(found => found != null);
+            }
+        }
+
+        public void DeleteBacklog(BacklogDefinitionDTO backlogToDelete)
+        {
+            var unit = GetOwner(backlogToDelete, _rootUnit);
+            ((IList<BacklogDefinitionDTO>)unit.Backlogs).Remove(backlogToDelete);
+
+            static OrganizationUnitDTO GetOwner(BacklogDefinitionDTO backlog, OrganizationUnitDTO unit)
+            {
+                if (unit.Backlogs.Contains(backlog))
+                    return unit;
+
+                return unit
+                    .Children
+                    .FirstOrDefault(child => GetOwner(backlog, child) != null);
+            }
+
+        }
+
+
+        public BacklogDefinitionDTO CreateBacklog(OrganizationUnitDTO unit, string name)
+        {
+            var id = _backlogs.Max(x => x.Id) + 1;
+            var newDef = new BacklogDefinitionDTO {Id = id, Name = name};
+            var newBacklog = new BacklogDTO {Id = id, Projects = new List<ProjectDTO>()};
+
+            _backlogs.Add(newBacklog);
+            ((IList<BacklogDefinitionDTO>)unit.Backlogs).Add(newDef);
+
+            return newDef;
         }
     }
 }

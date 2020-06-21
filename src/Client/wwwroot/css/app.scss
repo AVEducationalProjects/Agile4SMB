@@ -95,7 +95,7 @@ h1, h2, h3, h4, h5, h6 {
         }
     }
 
-    a:hover, .active > a, li:hover > a {
+    a:hover, li > a.active, li:hover > a {
         color: $main-color;
         background: $main-bg-color;
 
@@ -151,4 +151,8 @@ h1, h2, h3, h4, h5, h6 {
 --------------------------------------------------------------*/
 .list-group-item.active {
     background: $main-bg-color;
+}
+
+.selectable{
+    cursor: pointer;
 }

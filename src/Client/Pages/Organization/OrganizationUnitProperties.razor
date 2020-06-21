@@ -1,0 +1,73 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+
+@inject UserService UserService
+
+@if (Unit != null)
+{
+    <div class="d-flex w-100 justify-content-between mb-3">
+        <button class="btn btn-sm btn-success" @onclick="AddChild"><i class="oi oi-people" />&nbsp;Новое</button>
+        <button class="btn btn-sm btn-danger" @onclick="Delete"><i class="oi oi-x" />&nbsp;Удалить</button>
+    </div>
+    <EditForm Model="@Unit">
+        <div class="form-group">
+            <label for="unitName">Название подразделения</label>
+            <InputText id="unitName" class="form-control" @bind-Value="@Unit.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="unitBacklogs">Беклоги</label>
+            <div class="list-group">
+                @foreach (var backlog in Unit.Backlogs)
+                {
+                    <div class="form-row">
+                        <div class="form-group col-11">
+                            <input class="form-control form-control-sm" type="text"
+                                   @bind-value="@backlog.Name"/>
+                        </div>
+                        <div class="form-group col-1 text-right">
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="()=>DeleteBacklog(backlog)"><i class="oi oi-x"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button id="addBacklog" class="btn btn-light"
+                    @onclick="AddBacklog">Добавить беклог</button>
+        </div>
+
+    </EditForm>
+}
+
+@code {
+
+    [Parameter] public OrganizationUnitDTO Unit { get; set; }
+
+    [Parameter] public ISelectObserver<OrganizationUnitDTO> SelectObserver { get; set; }
+
+
+    private void AddChild()
+    {
+        var child = UserService.AddChildOrganizationUnit(Unit, "Новое подразделение");
+        SelectObserver.Select(child);
+    }
+
+    private void Delete()
+    {
+        var parent = UserService.DeleteOrganizationUnit(Unit);
+        SelectObserver.Select(parent);
+    }
+
+    private void DeleteBacklog(BacklogDefinitionDTO backlog)
+    {
+        UserService.DeleteBacklog(backlog);
+        StateHasChanged();
+    }
+
+    private void AddBacklog()
+    {
+        UserService.CreateBacklog(Unit, "Новый беклог");
+    }
+}

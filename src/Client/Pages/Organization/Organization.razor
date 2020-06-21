@@ -8,11 +8,12 @@
 
 <div class="row">
     <div class="col-5">
-        <OrganizationUnit Unit="@UserService.CurrentUnit" SelectObserver="@this" />
+        <OrganizationUnitTree Unit="@UserService.CurrentUnit" SelectObserver="@this" />
     </div>
 
     <div class="col-7">
         <div class="sticky-top">
+            <OrganizationUnitProperties Unit="@SelectedUnit" SelectObserver="@this"/>
         </div>
     </div>
 

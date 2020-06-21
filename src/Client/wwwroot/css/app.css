@@ -74,10 +74,10 @@ h1, h2, h3, h4, h5, h6 {
         display: none;
         color: #fff; } }
 
-.nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
+.nav-menu a:hover, .nav-menu li > a.active, .nav-menu li:hover > a {
   color: #fff;
   background: #28509B; }
-  .nav-menu a:hover span, .nav-menu .active > a span, .nav-menu li:hover > a span {
+  .nav-menu a:hover span, .nav-menu li > a.active span, .nav-menu li:hover > a span {
     color: #fff; }
 
 .nav-menu a:hover, .nav-menu li:hover > a {
@@ -115,3 +115,6 @@ h1, h2, h3, h4, h5, h6 {
 --------------------------------------------------------------*/
 .list-group-item.active {
   background: #28509B; }
+
+.selectable {
+  cursor: pointer; }

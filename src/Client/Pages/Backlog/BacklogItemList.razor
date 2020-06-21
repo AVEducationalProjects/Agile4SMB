@@ -10,7 +10,7 @@
 
     @foreach (var project in _projects)
     {
-        <div class="list-group-item list-group-item-action @(project==SelectObserver.Item?"active":"")"
+        <div class="list-group-item selectable list-group-item-action @(project==SelectObserver.Item?"active":"")"
              @onclick="@(e => SelectObserver.Select(project))">
             <div class="d-flex w-100 justify-content-between">
                 <small>@UserService.GetOrganizationUnit(project.UnitId).Name</small>

@@ -1,13 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@using Agile4SMB.Client.Pages.Backlog
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
 
 <button type="button" class="mobile-nav-toggle d-xl-none"><i class="oi oi-menu"></i></button>
 
 <header id="header" class="d-flex flex-column justify-content-center">
     <nav class="nav-menu">
         <ul>
-            <li class="active"><a href="/backlog"><i class="oi oi-list-rich"></i> <span>Проекты</span></a></li>
-            <li><a href="/organization"><i class="oi oi-people"></i> <span>Организация</span></a></li>
-            <li><a href="/goals"><i class="oi oi-fire"></i> <span>Цели</span></a></li>
+            <li><NavLink href="" Match="NavLinkMatch.All"><i class="oi oi-list-rich"></i> <span>Проекты</span></NavLink></li>
+            <li><NavLink href="organization"><i class="oi oi-people"></i> <span>Организация</span></NavLink></li>
+            <li><NavLink href="goals"><i class="oi oi-fire"></i> <span>Цели</span></NavLink></li>
         </ul>
     </nav>
 </header>
@@ -15,3 +18,4 @@
 <main id="main" class="container py-5">
     @Body
 </main>
+
