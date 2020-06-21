@@ -1,7 +1,48 @@
 ﻿@page "/goals"
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Shared
+
+@inject UserService UserService
+
+
+<div class="d-flex w-100 justify-content-between mb-3">
+    <button class="btn btn-sm btn-success" @onclick="AddGoal"><i class="oi oi-fire" />&nbsp;Новая</button>
+</div>
+
+<div class="list-group">
+    @foreach (var goal in UserService.GetGoals())
+    {
+        <EditForm Model="@goal">
+            <div class="form-row mb-3">
+                <div class="form-group col-11">
+                    <InputText class="form-control form-control-sm" type="text"
+                           @bind-Value="@goal.Name"/>
+                </div>
+                <div class="form-group col-1 text-right">
+                    <button class="btn btn-sm btn-outline-danger"
+                            @onclick="()=>DeleteGoal(goal)"><i class="oi oi-x"></i></button>
+                </div>
+                <div class="form-group col-11">
+                    <InputTextArea class="form-control form-control-sm" type="text"
+                                   @bind-Value="@goal.Description"/>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
 
 
 @code{
 
+
+    private void AddGoal()
+    {
+        UserService.CreateGoal("Новая цель");
+    }
+
+    private void DeleteGoal(GoalDTO goal)
+    {
+        UserService.DeleteGoal(goal);
+    }
 
 }

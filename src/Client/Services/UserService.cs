@@ -161,5 +161,27 @@ namespace Agile4SMB.Client.Services
 
             return newDef;
         }
+
+        private IList<GoalDTO> _goals = new List<GoalDTO>
+        {
+            new GoalDTO{Id = 1, Name = "Выручка с больших клиентов 20 млн. руб. (2020 год) "},
+            new GoalDTO{Id = 2, Name = "Выручка с существующих клиентов 15 млн. руб. (2020 год) "},
+        };
+
+        public IEnumerable<GoalDTO> GetGoals()
+        {
+            return _goals;
+        }
+
+        public void CreateGoal(string name)
+        {
+            var id = _goals.Max(x => x.Id) + 1;
+            _goals.Add(new GoalDTO {Id = id, Name = name, Description = String.Empty});
+        }
+
+        public void DeleteGoal(GoalDTO goal)
+        {
+            _goals.Remove(goal);
+        }
     }
 }
