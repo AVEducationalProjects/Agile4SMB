@@ -50,7 +50,7 @@ namespace Agile4SMB.Client.Pages.Backlog
             if (CurrentBacklog == null)
                 return;
 
-            UserService.AddProjectToBacklog(CurrentBacklog);
+            UserService.CreateProjectInBacklog(CurrentBacklog);
             StateHasChanged();
         }
 

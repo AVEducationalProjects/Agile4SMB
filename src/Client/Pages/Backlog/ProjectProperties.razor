@@ -6,7 +6,7 @@
 
 @if (Project != null)
 {
-    <div class="d-flex w-100 justify-content-between mb-3">
+    <div class="d-flex w-100 justify-content-between mb-3 pt-2">
         @if (Project.State == ProjectState.New)
         {
             <button class="btn btn-sm btn-primary" @onclick="Approve"> <i class="oi oi-media-play" />&nbsp;&nbsp;Согласовать  </button>
@@ -70,27 +70,31 @@
         <div class="form-group">
             <label for="projectAssignee">Задачи</label>
             <div class="list-group">
-                <div class="form-row">
-                    <div class="form-group col-1">
-                        <input class="form-control form-control-sm" type="checkbox" />
+                @foreach (var task in Project.Tasks)
+                {
+                    <div class="form-row">
+                        <div class="form-group col-1">
+                            <input class="form-control form-control-sm" type="checkbox" @bind="task.Done" />
+                        </div>
+                        <div class="form-group col-6">
+                            <input class="form-control form-control-sm" type="text" @bind="task.Name" />
+                        </div>
+                        <div class="form-group col-4">
+                            <select id="projectAssignee" class="form-control" @bind="@task.UnitId">
+                                @foreach (var unit in UserService.GetOrganizationUnits())
+                                {
+                                    <option value=@unit.Id>@unit.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-1 text-right">
+                            <button class="btn btn-sm btn-outline-danger" @onclick="()=> DeleteTask(task)"><i class="oi oi-x"></i></button>
+                        </div>
                     </div>
-                    <div class="form-group col-6">
-                        <input class="form-control form-control-sm" type="text" />
-                    </div>
-                    <div class="form-group col-4">
-                        <select class="form-control form-control-sm">
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-1 text-right">
-                        <button class="btn btn-sm btn-outline-danger"><i class="oi oi-x"></i></button>
-                    </div>
-                </div>
+                }
             </div>
 
-            <button id="addTask" class="btn btn-light">Добавить задачу</button>
+            <button id="addTask" class="btn btn-light" @onclick="AddTask">Добавить задачу</button>
         </div>
 
     </EditForm>
@@ -136,6 +140,16 @@
     {
         Project.State = ProjectState.Canceled;
         SelectObserver.Update();
+    }
+
+    private void DeleteTask(TaskDTO task)
+    {
+        UserService.DeleteTaskFromProject(Project, task);
+    }
+
+    private void AddTask()
+    {
+        UserService.CreateTaskInProject(Project, "Новая задача");
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Agile4SMB.Shared
 {
@@ -12,6 +13,8 @@ namespace Agile4SMB.Shared
 
         public ProjectState State { get; set; }
 
+        public IEnumerable<TaskDTO> Tasks { get; set; }
+
         public string StringState => State switch
         {
             ProjectState.New => "Новый",
@@ -22,5 +25,10 @@ namespace Agile4SMB.Shared
             ProjectState.Canceled => "Отменен",
             _ => "не известно"
         };
+
+        public ProjectDTO()
+        {
+            Tasks = new TaskDTO[] { };
+        }
     }
 }

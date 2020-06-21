@@ -44,7 +44,8 @@ namespace Agile4SMB.Client.Services
                         Id = new Guid("2D752FB1-D454-4574-80F4-4659B8DFE0C3"),
                         Name = "Оценка текущего бэклога ICL (не мобильные приложения)",
                         State = ProjectState.InProgress,
-                        UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8")
+                        UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"),
+                        Tasks = new List<TaskDTO>()
                     }
                 }
             },
@@ -77,14 +78,15 @@ namespace Agile4SMB.Client.Services
             }
         }
 
-        public void AddProjectToBacklog(BacklogDefinitionDTO backlogDefinition)
+        public void CreateProjectInBacklog(BacklogDefinitionDTO backlogDefinition)
         {
             var backlog = GetBacklog(backlogDefinition);
             ((List<ProjectDTO>)backlog.Projects).Add(
                 new ProjectDTO
                 {
                     Name = "Новый проект",
-                    UnitId = CurrentUnit.Id
+                    UnitId = CurrentUnit.Id,
+                    Tasks = new List<TaskDTO>()
                 });
         }
 
@@ -182,6 +184,17 @@ namespace Agile4SMB.Client.Services
         public void DeleteGoal(GoalDTO goal)
         {
             _goals.Remove(goal);
+        }
+
+        public void CreateTaskInProject(ProjectDTO project, string name)
+        {
+            ((IList<TaskDTO>) project.Tasks).Add(new TaskDTO {Name = name, UnitId = CurrentUnit.Id, Done = false});
+        }
+
+        public void DeleteTaskFromProject(ProjectDTO project, TaskDTO task)
+        {
+            if(project.Tasks.Contains(task))
+                ((IList<TaskDTO>) project.Tasks).Remove(task);
         }
     }
 }
