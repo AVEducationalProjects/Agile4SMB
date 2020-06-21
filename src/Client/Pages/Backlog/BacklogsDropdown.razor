@@ -17,11 +17,11 @@
     [Parameter] public ISelectObserver<BacklogDefinitionDTO> SelectObserver { get; set; }
 
 
-    private long _selectedBacklogId;
+    private Guid _selectedBacklogId;
     private BacklogDefinitionDTO _selectedBacklog;
-    private IEnumerable<(long id, string name, string unit)> _backlogList;
+    private IEnumerable<(Guid id, string name, string unit)> _backlogList;
 
-    private long SelectedBacklogId
+    private Guid SelectedBacklogId
     {
         get => _selectedBacklogId;
         set
@@ -39,7 +39,7 @@
             .GetAvailableBacklogs()
             .Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
 
-        _selectedBacklogId = SelectObserver.Item?.Id ?? (_backlogList?.FirstOrDefault().id ?? 0);
+        _selectedBacklogId = SelectObserver.Item?.Id ?? (_backlogList?.FirstOrDefault().id ?? new Guid());
 
         return base.OnParametersSetAsync();
     }

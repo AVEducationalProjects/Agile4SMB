@@ -9,26 +9,26 @@ namespace Agile4SMB.Client.Services
 {
     public class UserService
     {
-
+        
         private readonly OrganizationUnitDTO _rootUnit = new OrganizationUnitDTO
         {
-            Id = 1,
+            Id = new Guid("14B7DA88-B31E-4380-8807-868C997D4D45"),
             Name = "Adeptik",
             Backlogs = new List<BacklogDefinitionDTO>
             {
-                new BacklogDefinitionDTO {Id = 1, Name = "Основной"}
+                new BacklogDefinitionDTO {Id = new Guid("00EFDF68-109A-42DB-BBF2-F2C914F3D3D5"), Name = "Основной"}
             },
             Children = new List<OrganizationUnitDTO>
             {
                 new OrganizationUnitDTO
                 {
-                    Id = 11,
+                    Id = new Guid("EBA5D061-3A88-4C38-80FC-600B665CB5FB"),
                     Name = "Коммерческий департамент",
-                    Backlogs = new List<BacklogDefinitionDTO> {new BacklogDefinitionDTO {Id = 2, Name = "Основной-1"}}
+                    Backlogs = new List<BacklogDefinitionDTO> {new BacklogDefinitionDTO {Id = new Guid("3FCBF137-035A-4AB9-8288-16B6BDC7C1CC"), Name = "Основной-1"}}
                 },
-                new OrganizationUnitDTO {Id = 2, Name = "Технический департамент"},
-                new OrganizationUnitDTO {Id = 3, Name = "БН \"Сервис\""},
-                new OrganizationUnitDTO {Id = 4, Name = "БН \"Производство\""},
+                new OrganizationUnitDTO {Id = new Guid("16CD6157-CB35-4800-881A-3F00A0B7A9E0"), Name = "Технический департамент"},
+                new OrganizationUnitDTO {Id = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"), Name = "БН \"Сервис\""},
+                new OrganizationUnitDTO {Id = new Guid("B3E14931-DD4F-4FE4-91D1-F2F5F8DC1454"), Name = "БН \"Производство\""},
             }
         };
 
@@ -36,21 +36,21 @@ namespace Agile4SMB.Client.Services
         {
             new BacklogDTO
             {
-                Id = 1,
+                Id = new Guid("00EFDF68-109A-42DB-BBF2-F2C914F3D3D5"),
                 Projects = new List<ProjectDTO>
                 {
                     new ProjectDTO
                     {
-                        Id = 1,
+                        Id = new Guid("2D752FB1-D454-4574-80F4-4659B8DFE0C3"),
                         Name = "Оценка текущего бэклога ICL (не мобильные приложения)",
                         State = ProjectState.InProgress,
-                        UnitId = 3
+                        UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8")
                     }
                 }
             },
             new BacklogDTO
             {
-                Id = 2,
+                Id = new Guid("3FCBF137-035A-4AB9-8288-16B6BDC7C1CC"),
                 Projects = new List<ProjectDTO>()
             }
         };
@@ -62,11 +62,11 @@ namespace Agile4SMB.Client.Services
             return _backlogs.Single(x => x.Id == backlogDefinition.Id);
         }
 
-        public OrganizationUnitDTO GetOrganizationUnit(in long unitId)
+        public OrganizationUnitDTO GetOrganizationUnit(in Guid unitId)
         {
             return Find(unitId, _rootUnit);
 
-            static OrganizationUnitDTO Find(long id, OrganizationUnitDTO unit)
+            static OrganizationUnitDTO Find(Guid id, OrganizationUnitDTO unit)
             {
                 if (unit.Id == id)
                     return unit;
@@ -152,7 +152,7 @@ namespace Agile4SMB.Client.Services
 
         public BacklogDefinitionDTO CreateBacklog(OrganizationUnitDTO unit, string name)
         {
-            var id = _backlogs.Max(x => x.Id) + 1;
+            var id = Guid.NewGuid();
             var newDef = new BacklogDefinitionDTO {Id = id, Name = name};
             var newBacklog = new BacklogDTO {Id = id, Projects = new List<ProjectDTO>()};
 
@@ -164,8 +164,8 @@ namespace Agile4SMB.Client.Services
 
         private IList<GoalDTO> _goals = new List<GoalDTO>
         {
-            new GoalDTO{Id = 1, Name = "Выручка с больших клиентов 20 млн. руб. (2020 год) "},
-            new GoalDTO{Id = 2, Name = "Выручка с существующих клиентов 15 млн. руб. (2020 год) "},
+            new GoalDTO{Id = new Guid("BB0A6A9D-0F83-461F-A5AE-CBF1FE0B781C"), Name = "Выручка с больших клиентов 20 млн. руб. (2020 год) "},
+            new GoalDTO{Id = new Guid("4363A829-82A5-412C-9995-4A9145E92606"), Name = "Выручка с существующих клиентов 15 млн. руб. (2020 год) "},
         };
 
         public IEnumerable<GoalDTO> GetGoals()
@@ -175,7 +175,7 @@ namespace Agile4SMB.Client.Services
 
         public void CreateGoal(string name)
         {
-            var id = _goals.Max(x => x.Id) + 1;
+            var id = Guid.NewGuid();
             _goals.Add(new GoalDTO {Id = id, Name = name, Description = String.Empty});
         }
 

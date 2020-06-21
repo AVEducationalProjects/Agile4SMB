@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Agile4SMB.Shared
 {
     public class BacklogDTO
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
         public IEnumerable<ProjectDTO> Projects { get; set; }
 

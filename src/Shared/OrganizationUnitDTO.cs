@@ -8,7 +8,7 @@ namespace Agile4SMB.Shared
 {
     public class OrganizationUnitDTO
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public IEnumerable<BacklogDefinitionDTO> Backlogs { get; set; }
         public IEnumerable<OrganizationUnitDTO> Children { get; set; }
