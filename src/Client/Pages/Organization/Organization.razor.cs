@@ -15,5 +15,10 @@ namespace Agile4SMB.Client.Pages.Organization
             SelectedUnit = item;
             StateHasChanged();
         }
+
+        public void Update()
+        {
+            StateHasChanged();
+        }
     }
 }

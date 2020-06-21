@@ -1,14 +1,49 @@
 ﻿@using Agile4SMB.Shared
 @using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
 
 @inject UserService UserService
 
 @if (Project != null)
 {
-    <EditForm Model = "@Project">
+    <div class="d-flex w-100 justify-content-between mb-3">
+        @if (Project.State == ProjectState.New)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="Approve"> <i class="oi oi-media-play" />&nbsp;&nbsp;Согласовать  </button>
+        }
+
+        @if (Project.State == ProjectState.Approved)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="DoWork"> <i class="oi oi-media-play" />&nbsp;&nbsp;В работу  </button>
+        }
+
+        @if (Project.State == ProjectState.InProgress)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="CompleteWork"> <i class="oi oi-media-play" />&nbsp;&nbsp;Завершить  </button>
+        }
+
+        @if (Project.State == ProjectState.Stopped)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="Resume"> <i class="oi oi-media-play" />&nbsp;&nbsp;Возобновить</button>
+        }
+
+        @if (Project.State == ProjectState.InProgress)
+        {
+            <button class="btn btn-sm btn-warning" @onclick="Pause"> <i class="oi oi-media-pause" />&nbsp;&nbsp;Приостановить</button>
+        }
+
+        @if (Project.State != ProjectState.Done && Project.State != ProjectState.Canceled)
+        {
+            <button class="btn btn-sm btn-danger" @onclick="Cancel"> <i class="oi oi-media-stop" />&nbsp;&nbsp;Отменить</button>
+        }
+    </div>
+
+    <EditForm Model="@Project">
         <div class="form-group">
             <label for="projectName">Название проекта</label>
-            <InputTextArea id="projectName" class="form-control" @bind-Value="@Project.Name" />
+            <textarea id="projectName" class="form-control"
+                      value="@Project.Name"
+                      @oninput="(e) => { Project.Name = e.Value.ToString(); SelectObserver.Update(); }"></textarea>
         </div>
 
         <div class="form-group">
@@ -63,6 +98,44 @@
 
 @code {
 
-    [Parameter]
-    public ProjectDTO Project { get; set; }
+    [Parameter] public ProjectDTO Project { get; set; }
+
+    [Parameter] public ISelectObserver<ProjectDTO> SelectObserver { get; set; }
+
+    private void Approve()
+    {
+        Project.State = ProjectState.Approved;
+        SelectObserver.Update();
+    }
+
+    private void DoWork()
+    {
+        Project.State = ProjectState.InProgress;
+        SelectObserver.Update();
+    }
+
+    private void CompleteWork()
+    {
+        Project.State = ProjectState.Done;
+        SelectObserver.Update();
+    }
+
+    private void Resume()
+    {
+        Project.State = ProjectState.InProgress;
+        SelectObserver.Update();
+    }
+
+    private void Pause()
+    {
+        Project.State = ProjectState.Stopped;
+        SelectObserver.Update();
+    }
+
+    private void Cancel()
+    {
+        Project.State = ProjectState.Canceled;
+        SelectObserver.Update();
+    }
+
 }

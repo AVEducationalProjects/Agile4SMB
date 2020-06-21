@@ -22,7 +22,12 @@ namespace Agile4SMB.Client.Pages.Backlog
             CurrentBacklog = item;
             StateHasChanged();
         }
-        
+
+        public void Update()
+        {
+            StateHasChanged();
+        }
+
         ProjectDTO ISelectObserver<ProjectDTO>.Item => CurrentProject;
         public void Select(ProjectDTO item)
         {

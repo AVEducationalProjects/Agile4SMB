@@ -10,10 +10,12 @@
         <button class="btn btn-sm btn-success" @onclick="AddChild"><i class="oi oi-people" />&nbsp;Новое</button>
         <button class="btn btn-sm btn-danger" @onclick="Delete"><i class="oi oi-x" />&nbsp;Удалить</button>
     </div>
+
     <EditForm Model="@Unit">
         <div class="form-group">
             <label for="unitName">Название подразделения</label>
-            <InputText id="unitName" class="form-control" @bind-Value="@Unit.Name" />
+            <input id="unitName" class="form-control" value="@Unit.Name"
+                   @oninput="BindName" />
         </div>
 
         <div class="form-group">
@@ -24,18 +26,19 @@
                     <div class="form-row">
                         <div class="form-group col-11">
                             <input class="form-control form-control-sm" type="text"
-                                   @bind-value="@backlog.Name"/>
+                                   @bind-value="@backlog.Name" />
                         </div>
                         <div class="form-group col-1 text-right">
                             <button class="btn btn-sm btn-outline-danger"
-                                    @onclick="()=>DeleteBacklog(backlog)"><i class="oi oi-x"></i></button>
+                                    @onclick="()=>DeleteBacklog(backlog)">
+                                <i class="oi oi-x"></i>
+                            </button>
                         </div>
                     </div>
                 }
             </div>
 
-            <button id="addBacklog" class="btn btn-light"
-                    @onclick="AddBacklog">Добавить беклог</button>
+            <button id="addBacklog" class="btn btn-sm btn-outline-success" @onclick="AddBacklog"> Добавить беклог </button>
         </div>
 
     </EditForm>
@@ -70,4 +73,11 @@
     {
         UserService.CreateBacklog(Unit, "Новый беклог");
     }
+
+    private void BindName(ChangeEventArgs e)
+    {
+        Unit.Name = e.Value.ToString();
+        SelectObserver.Update();
+    }
+
 }

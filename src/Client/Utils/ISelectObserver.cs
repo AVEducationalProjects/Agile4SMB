@@ -9,5 +9,6 @@ namespace Agile4SMB.Client.Utils
     {
         TItem Item { get;}
         void Select(TItem item);
+        void Update();
     }
 }

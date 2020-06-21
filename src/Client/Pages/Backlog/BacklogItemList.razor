@@ -14,7 +14,7 @@
              @onclick="@(e => SelectObserver.Select(project))">
             <div class="d-flex w-100 justify-content-between">
                 <small>@UserService.GetOrganizationUnit(project.UnitId).Name</small>
-                <small class="badge badge-pill badge-light">в&nbsp;работе</small>
+                <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
             </div>
             <p class="mb-1 pt-2">@project.Name</p>
         </div>

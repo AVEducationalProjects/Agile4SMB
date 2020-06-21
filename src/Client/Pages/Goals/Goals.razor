@@ -15,14 +15,16 @@
         <EditForm Model="@goal">
             <div class="form-row mb-3">
                 <div class="form-group col-11">
+                    <label>Название цели</label>
                     <InputText class="form-control form-control-sm" type="text"
-                           @bind-Value="@goal.Name"/>
+                               @bind-Value="@goal.Name"/>
                 </div>
                 <div class="form-group col-1 text-right">
                     <button class="btn btn-sm btn-outline-danger"
                             @onclick="()=>DeleteGoal(goal)"><i class="oi oi-x"></i></button>
                 </div>
                 <div class="form-group col-11">
+                    <label>Описание</label>
                     <InputTextArea class="form-control form-control-sm" type="text"
                                    @bind-Value="@goal.Description"/>
                 </div>

@@ -12,5 +12,15 @@ namespace Agile4SMB.Shared
 
         public ProjectState State { get; set; }
 
+        public string StringState => State switch
+        {
+            ProjectState.New => "Новый",
+            ProjectState.Approved => "Согласован",
+            ProjectState.InProgress => "В работе",
+            ProjectState.Done => "Завершен",
+            ProjectState.Stopped => "Приостановлен",
+            ProjectState.Canceled => "Отменен",
+            _ => "не известно"
+        };
     }
 }
