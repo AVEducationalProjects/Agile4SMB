@@ -15,6 +15,8 @@ namespace Agile4SMB.Shared
 
         public IEnumerable<TaskDTO> Tasks { get; set; }
 
+        public IEnumerable<ProjectGoalDTO> Goals { get; set; }
+
         public string StringState => State switch
         {
             ProjectState.New => "Новый",
@@ -26,9 +28,11 @@ namespace Agile4SMB.Shared
             _ => "не известно"
         };
 
+
         public ProjectDTO()
         {
             Tasks = new TaskDTO[] { };
+            Goals = new ProjectGoalDTO[] { };
         }
     }
 }

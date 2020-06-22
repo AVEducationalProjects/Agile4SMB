@@ -9,7 +9,7 @@ namespace Agile4SMB.Client.Services
 {
     public class UserService
     {
-        
+
         private readonly OrganizationUnitDTO _rootUnit = new OrganizationUnitDTO
         {
             Id = new Guid("14B7DA88-B31E-4380-8807-868C997D4D45"),
@@ -45,7 +45,8 @@ namespace Agile4SMB.Client.Services
                         Name = "Оценка текущего бэклога ICL (не мобильные приложения)",
                         State = ProjectState.InProgress,
                         UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"),
-                        Tasks = new List<TaskDTO>()
+                        Tasks = new List<TaskDTO>(),
+                        Goals = new List<ProjectGoalDTO>()
                     }
                 }
             },
@@ -86,7 +87,8 @@ namespace Agile4SMB.Client.Services
                 {
                     Name = "Новый проект",
                     UnitId = CurrentUnit.Id,
-                    Tasks = new List<TaskDTO>()
+                    Tasks = new List<TaskDTO>(),
+                    Goals = new List<ProjectGoalDTO>()
                 });
         }
 
@@ -155,8 +157,8 @@ namespace Agile4SMB.Client.Services
         public BacklogDefinitionDTO CreateBacklog(OrganizationUnitDTO unit, string name)
         {
             var id = Guid.NewGuid();
-            var newDef = new BacklogDefinitionDTO {Id = id, Name = name};
-            var newBacklog = new BacklogDTO {Id = id, Projects = new List<ProjectDTO>()};
+            var newDef = new BacklogDefinitionDTO { Id = id, Name = name };
+            var newBacklog = new BacklogDTO { Id = id, Projects = new List<ProjectDTO>() };
 
             _backlogs.Add(newBacklog);
             ((IList<BacklogDefinitionDTO>)unit.Backlogs).Add(newDef);
@@ -178,7 +180,7 @@ namespace Agile4SMB.Client.Services
         public void CreateGoal(string name)
         {
             var id = Guid.NewGuid();
-            _goals.Add(new GoalDTO {Id = id, Name = name, Description = String.Empty});
+            _goals.Add(new GoalDTO { Id = id, Name = name, Description = String.Empty });
         }
 
         public void DeleteGoal(GoalDTO goal)
@@ -188,13 +190,24 @@ namespace Agile4SMB.Client.Services
 
         public void CreateTaskInProject(ProjectDTO project, string name)
         {
-            ((IList<TaskDTO>) project.Tasks).Add(new TaskDTO {Name = name, UnitId = CurrentUnit.Id, Done = false});
+            ((IList<TaskDTO>)project.Tasks).Add(new TaskDTO { Name = name, UnitId = CurrentUnit.Id, Done = false });
         }
 
         public void DeleteTaskFromProject(ProjectDTO project, TaskDTO task)
         {
-            if(project.Tasks.Contains(task))
-                ((IList<TaskDTO>) project.Tasks).Remove(task);
+            if (project.Tasks.Contains(task))
+                ((IList<TaskDTO>)project.Tasks).Remove(task);
+        }
+
+        public void DeleteProjectGoal(ProjectDTO project, ProjectGoalDTO goal)
+        {
+            if (project.Goals.Contains(goal))
+                ((IList<ProjectGoalDTO>)project.Goals).Remove(goal);
+        }
+
+        public void AddProjectGoal(ProjectDTO project, Guid id, string name)
+        {
+            ((IList<ProjectGoalDTO>)project.Goals).Add(new ProjectGoalDTO{Id = id, Name = name});
         }
     }
 }

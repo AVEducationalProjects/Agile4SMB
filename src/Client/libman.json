@@ -3,6 +3,13 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/vendor/jquery",
+      "files": [
+        "dist/jquery.min.js"
+      ]
+    },
+    {
       "library": "bootstrap@4.5.0",
       "destination": "wwwroot/vendor/bootstrap/",
       "files": [
