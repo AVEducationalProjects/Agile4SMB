@@ -127,5 +127,15 @@ namespace Agile4SMB.Client.Services
             if (!result.IsSuccessStatusCode)
                 throw new ApplicationException("Не получилось обновить беклог.");
         }
+
+        public async Task SetAccount(OrganizationUnit unit, string password)
+        {
+            var result = await _http.PostAsJsonAsync($"api/Accounts",
+                new SetAccountDTO { UnitId = unit.Id, UserName = unit.UserName, Password = password});
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось удалить изменить аккаунт.");
+
+        }
     }
 }

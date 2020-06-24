@@ -11,6 +11,8 @@
         public string ProjectCollection { get; set; }
 
         public string GoalCollection { get; set; }
+
+        public string AccountCollection { get; set; }
     }
 
 }

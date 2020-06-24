@@ -21,6 +21,13 @@
         </div>
 
         <div class="form-group">
+            <button id="projectPurpose" class="btn btn-sm btn-outline-info"
+                    data-toggle="modal" data-target="#accountModal">
+                Настройка учетной записи
+            </button>
+        </div>
+
+        <div class="form-group">
             <label for="unitBacklogs">Беклоги</label>
             <div class="list-group">
                 @foreach (var backlog in Unit.Backlogs)
@@ -44,6 +51,34 @@
         </div>
 
     </EditForm>
+
+    <!-- Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Настройка учетной записи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="login">Логин</label>
+                        <input id="login" class="form-control" @bind="Unit.UserName" @bind:event="oninput"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input id="password" class="form-control" type="password" @bind="_password" @bind:event="oninput" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="SetAccount">Задать</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
@@ -52,6 +87,7 @@
 
     [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
 
+    private string _password;
 
     private async Task AddChild()
     {
@@ -93,6 +129,11 @@
     {
         backlog.Name = changeEventArgs.Value.ToString();
         await UserUnitService.UpdateBacklog(backlog);
+    }
+
+    private async Task SetAccount()
+    {
+        await UserUnitService.SetAccount(Unit, _password);
     }
 
 }
