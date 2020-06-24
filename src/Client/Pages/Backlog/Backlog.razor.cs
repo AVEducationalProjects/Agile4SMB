@@ -15,18 +15,28 @@ namespace Agile4SMB.Client.Pages.Backlog
         [Inject] public UserUnitService UserUnitService { get; set; }
         [Inject] public BacklogService BacklogService { get; set; }
 
-        protected BacklogDefinition CurrentBacklog { get; set; }
-
+        protected OrganizationUnit CurrentUnit { get; set; }
+        protected BacklogDefinition CurrentBacklogDefinition { get; set; }
+        protected Agile4SMB.Shared.Domain.Backlog CurrentBacklog { get; set; }
         protected Project CurrentProject { get; set; }
-        
-        BacklogDefinition ISelectObserver<BacklogDefinition>.Item => CurrentBacklog;
-        public Task Select(BacklogDefinition item)
+
+        protected override async Task OnInitializedAsync()
         {
             CurrentProject = null;
-            CurrentBacklog = item;
+            CurrentUnit = await UserUnitService.GetCurrentUnit();
+            CurrentBacklogDefinition = CurrentUnit.GetAvailableBacklogs().First().backlog;
+            CurrentBacklog = await BacklogService.GetBacklog(CurrentBacklogDefinition);
             Update();
+        }
+        
+        BacklogDefinition ISelectObserver<BacklogDefinition>.Item => CurrentBacklogDefinition;
 
-            return Task.CompletedTask;
+        public async Task Select(BacklogDefinition item)
+        {
+            CurrentProject = null;
+            CurrentBacklogDefinition = item;
+            CurrentBacklog = await BacklogService.GetBacklog(CurrentBacklogDefinition);
+            Update();
         }
 
         public void Update()
@@ -44,10 +54,10 @@ namespace Agile4SMB.Client.Pages.Backlog
 
         protected override async Task OnParametersSetAsync()
         {
-            if (CurrentBacklog == null)
+            if (CurrentBacklogDefinition == null)
             {
                 var unit = await UserUnitService.GetCurrentUnit();
-                CurrentBacklog = unit.Backlogs.FirstOrDefault();
+                CurrentBacklogDefinition = unit.Backlogs.FirstOrDefault();
                 StateHasChanged();
             }
             await base.OnParametersSetAsync();
@@ -55,10 +65,10 @@ namespace Agile4SMB.Client.Pages.Backlog
 
         protected async Task AddProject()
         {
-            if (CurrentBacklog == null)
+            if (CurrentBacklogDefinition == null)
                 return;
 
-            await BacklogService.CreateProjectInBacklog(CurrentBacklog);
+            await BacklogService.CreateProjectInBacklog(CurrentBacklogDefinition);
             StateHasChanged();
         }
 

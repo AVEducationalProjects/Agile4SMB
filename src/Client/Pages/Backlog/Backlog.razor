@@ -8,7 +8,7 @@
 <div class="row">
     <div class="col-5">
 
-        <BacklogsDropdown Unit="@_currentUnit"
+        <BacklogsDropdown Unit="@CurrentUnit"
                           SelectObserver="@this" />
 
         <div class="d-flex w-100 justify-content-between mb-2">
@@ -16,26 +16,19 @@
             <button class="btn btn-sm btn-success" @onclick="@AddProject"><i class="oi oi-project" />&nbsp;Новый</button>
         </div>
 
-        <BacklogItemList BacklogDefinition="@CurrentBacklog" 
-                         SelectObserver="@this" />
+        <BacklogItemList Backlog="@CurrentBacklog" SelectObserver="@this" />
 
     </div>
 
     <div class="col-7">
         <div class="sticky-top">
-            <ProjectProperties Project="@CurrentProject" 
-                               SelectObserver="@this"/>
+            <ProjectProperties Project="@CurrentProject" SelectObserver="@this"/>
         </div>
     </div>
 </div>
 
 @code{
 
-    private OrganizationUnit _currentUnit;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _currentUnit = await UserUnitService.GetCurrentUnit();
-    }
+    
 
 }

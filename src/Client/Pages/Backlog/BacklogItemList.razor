@@ -8,33 +8,29 @@
 @inject BacklogService BacklogService
 
 
-<div class="list-group">
+@if (Backlog != null)
+{
+    <div class="list-group">
 
-    @foreach (var project in _projects)
-    {
-        <div class="list-group-item selectable list-group-item-action @(project==SelectObserver.Item?"active":"")"
-             @onclick="@(e => SelectObserver.Select(project))">
-            <div class="d-flex w-100 justify-content-between">
-                <small>@UserUnitService.GetOrganizationUnit(project.UnitId).Name</small>
-                <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+        @foreach (var project in Backlog.Projects)
+        {
+            <div class="list-group-item selectable list-group-item-action @(project == SelectObserver.Item ? "active" : "")"
+                 @onclick="@(e => SelectObserver.Select(project))">
+                <div class="d-flex w-100 justify-content-between">
+                    <small>@UserUnitService.GetOrganizationUnit(project.UnitId).Name</small>
+                    <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+                </div>
+                <p class="mb-1 pt-2">@project.Name</p>
             </div>
-            <p class="mb-1 pt-2">@project.Name</p>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
 
 @code {
 
-    [Parameter] public BacklogDefinition BacklogDefinition { get; set; }
+    [Parameter] public Agile4SMB.Shared.Domain.Backlog Backlog { get; set; }
 
     [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
 
     private IEnumerable<Project> _projects;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        var backlog = await BacklogService.GetBacklog(BacklogDefinition);
-        _projects = backlog.Projects;
-    }
-
 }

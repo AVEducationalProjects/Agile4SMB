@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Agile4SMB.Shared.Domain;
 
@@ -18,12 +19,7 @@ namespace Agile4SMB.Client.Services
         
         public async Task<Backlog> GetBacklog(BacklogDefinition backlogDefinition)
         {
-            //if (backlogDefinition == null)
-            //    return new Backlog { Projects = new Project[] { } };
-
-            //return _backlogs.Single(x => x.Id == backlogDefinition.Id);
-
-            return new Backlog();
+            return await  _http.GetFromJsonAsync<Backlog>($"api/Backlogs?id={backlogDefinition.Id}");
         }
 
 
