@@ -42,7 +42,7 @@
         }
     </div>
 
-    <EditForm Model="@Project">
+    <div>
         <div class="form-group">
             <label for="projectName">Название проекта</label>
             <textarea id="projectName" class="form-control"
@@ -83,12 +83,12 @@
                 {
                     <div class="form-row">
                         <div class="form-group col-1">
-                            <input class="form-control form-control-sm" type="checkbox" value="@task.Done" 
-                                   @onchange="@(async(e) => await UpdateTaskFlag(task,e))"/>
+                            <input class="form-control form-control-sm" type="checkbox" checked="@task.Done"
+                                   @onchange="@(async(e) => await UpdateTaskFlag(task,e))" />
                         </div>
                         <div class="form-group col-6">
                             <input class="form-control form-control-sm" type="text" value="@task.Name"
-                                   @onchange="@(async(e) => await UpdateTaskName(task,e))"/>
+                                   @onchange="@(async(e) => await UpdateTaskName(task,e))" />
                         </div>
                         <div class="form-group col-4">
                             <select id="projectAssignee" class="form-control" value="@task.UnitId"
@@ -109,12 +109,11 @@
             <button id="addTask" class="btn btn-sm btn-outline-success" @onclick="AddTask">Добавить задачу</button>
         </div>
 
-    </EditForm>
+    </div>
 
 
     <!-- Modal -->
-    <div class="modal fade" id="goalsModal" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal fade" id="goalsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -124,15 +123,18 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    @foreach (var goal in GetGoalsCheckList())
+                    @if (_goalList != null)
                     {
-                        <div class="form-check">
-                        <input class="form-check-input" type="checkbox" 
-                               id="@($"chk-goal-{goal.id:N}")"
-                               value="@goal.actual" @onchange="@(()=>ToggleGoal(goal))" />
-                        <label class="form-check-label" 
-                               for="@($"chk-goal-{goal.id:N}")">@goal.name</label>
-                        </div>
+                        @foreach (var goal in _goalList)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       id="@($"chk-goal-{goal.id:N}")"
+                                       checked="@goal.actual" @onchange="@(async (e) => await ToggleGoal(goal.id, e))" />
+                                <label class="form-check-label"
+                                       for="@($"chk-goal-{goal.id:N}")">@goal.name</label>
+                            </div>
+                        }
                     }
                 </div>
                 <div class="modal-footer">
@@ -140,7 +142,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 }
 
 @code {
@@ -148,6 +150,14 @@
     [Parameter] public Project Project { get; set; }
 
     [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
+
+    private IEnumerable<(Guid id, string name, bool actual)> _goalList;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _goalList = await GetGoalsCheckList();
+        StateHasChanged();
+    }
 
     private async Task UpdateProject()
     {
@@ -250,34 +260,40 @@
 
     #endregion
 
+    #region Edit goals
 
-    private IEnumerable<(Guid id, string name, bool actual)> GetGoalsCheckList()
+    private async Task<IEnumerable<(Guid id, string name, bool actual)>> GetGoalsCheckList()
     {
-        var goals = GoalsService.GetGoals().Result.ToArray();
-        var currentGoals = Project.Goals.ToArray();
+        if (Project == null)
+            return new (Guid id, string name, bool actual)[] { };
+
+        var goals = await GoalsService.GetGoals();
+        var currentGoals = Project.Goals;
 
         return goals
-            .Select(goal => (goal.Id,
-                    goal.Name,
-                    currentGoals.Any(x => x.Id == goal.Id)))
+            .Select(goal => (id:goal.Id, name:goal.Name, actual:currentGoals.Any(x => x.Id == goal.Id)))
             .Union(
                 currentGoals
                     .Where(x => goals.All(g => g.Id != x.Id))
-                    .Select(x => (x.Id, x.Name, true)));
+                    .Select(x => (id:x.Id, name:x.Name, actual:true))).ToArray();
     }
 
-    private async Task ToggleGoal((Guid id, string name, bool actual) goal)
+    private async Task ToggleGoal(Guid id, ChangeEventArgs changeEventArgs)
     {
-        if (Project.Goals.Any(x => x.Id == goal.id))
+        if (changeEventArgs.Value.ToString() == "True")
         {
-            await BacklogService.DeleteProjectGoal(Project,
-            Project.Goals.Single(x => x.Id == goal.id));
+            var goal = _goalList.SingleOrDefault(x => x.id == id);
+            await BacklogService.AddProjectGoal(Project, goal.id, goal.name);
         }
         else
         {
-            await BacklogService.AddProjectGoal(Project, goal.id, goal.name);
+            await BacklogService.DeleteProjectGoal(Project,
+                Project.Goals.Single(x => x.Id == id));
         }
+
         StateHasChanged();
     }
+
+    #endregion
 
 }

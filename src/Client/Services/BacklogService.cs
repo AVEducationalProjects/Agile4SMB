@@ -70,13 +70,21 @@ namespace Agile4SMB.Client.Services
 
         public async Task AddProjectGoal(Project project, Guid id, string name)
         {
-            //((IList<ProjectGoal>)project.Goals).Add(new ProjectGoal { Id = id, Name = name });
+            project.Goals = project.Goals.Union(new[]
+            {
+                new ProjectGoal
+                {
+                    Name = name,
+                    Id = id
+                }
+            }).ToArray();
+            await UpdateProject(project);
         }
 
         public async Task DeleteProjectGoal(Project project, ProjectGoal goal)
         {
-            //if (project.Goals.Contains(goal))
-            //    ((IList<ProjectGoal>)project.Goals).Remove(goal);
+            project.Goals = project.Goals.Where(x => x.Id != goal.Id).ToArray();
+            await UpdateProject(project);
         }
 
     }
