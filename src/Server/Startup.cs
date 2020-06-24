@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Hosting;
@@ -6,8 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Agile4SMB.Server.Options;
 using Agile4SMB.Server.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Agile4SMB.Server
 {
@@ -24,10 +27,28 @@ namespace Agile4SMB.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "PAM",
+                        ValidateAudience = true,
+                        ValidAudience = "*.PAM",
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = Configuration.GetSection("JWT").Get<JWTOptions>().GetSigningKey()
+                    };
+
+                });
+
+
             services.AddScoped<IOrganizationUnitRepository, OrganizationUnitMongoRepository>();
             services.AddScoped<IBacklogRepository, BacklogMongoRepository>();
             services.AddScoped<IGoalRepository, GoalMongoRepository>();
-            
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
@@ -46,6 +67,8 @@ namespace Agile4SMB.Server
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();

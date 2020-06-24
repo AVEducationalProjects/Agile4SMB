@@ -24,7 +24,7 @@ namespace Agile4SMB.Server.Controllers
             _organizationUnitRepository = organizationUnitRepository;
         }
 
-        static string Hash(string input)
+        public static string Hash(string input)
         {
             using SHA1Managed sha1 = new SHA1Managed();
             var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(input));

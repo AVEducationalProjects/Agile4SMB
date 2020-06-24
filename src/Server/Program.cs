@@ -29,7 +29,8 @@ namespace Agile4SMB.Server
         private static void ConfigureOptions(WebHostBuilderContext context, IServiceCollection services)
         {
             services.AddOptions()
-                .Configure<MongoOptions>(context.Configuration.GetSection("Mongo"));
+                .Configure<MongoOptions>(context.Configuration.GetSection("Mongo"))
+                .Configure<JWTOptions>(context.Configuration.GetSection("JWT"));
         }
     }
 

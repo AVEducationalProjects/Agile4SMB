@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Agile4SMB.Client.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Agile4SMB.Client
 {
@@ -18,6 +19,8 @@ namespace Agile4SMB.Client
             builder.Services.AddScoped<UserUnitService>();
             builder.Services.AddScoped<BacklogService>();
             builder.Services.AddScoped<GoalsService>();
+
+            builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();
         }

@@ -81,5 +81,10 @@ namespace Agile4SMB.Server.Repositories
             updatedUnit.UserName = account.UserName;
             _organizationUnitCollection.ReplaceOne(x => x.Id == root.Id, root);
         }
+
+        public Account GetAccount(string username)
+        {
+            return _accountCollection.FindSync(x => x.UserName == username).SingleOrDefault();
+        }
     }
 }

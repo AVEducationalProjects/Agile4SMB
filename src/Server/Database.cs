@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Agile4SMB.Server.Controllers;
+using Agile4SMB.Server.Model;
 using Agile4SMB.Server.Options;
 using Agile4SMB.Shared.Domain;
 using MongoDB.Driver;
@@ -46,6 +48,9 @@ namespace Agile4SMB.Server
                         new OrganizationUnit {Id = new Guid("B3E14931-DD4F-4FE4-91D1-F2F5F8DC1454"), Name = "БН \"Производство\""},
                     }
                 });
+
+                database.GetCollection<Account>(mongoOptions.AccountCollection)
+                    .InsertOne(new Account{UserName = "Admin", PasswordHash = AccountsController.Hash("123456")});
             }
 
             void SeedProjects()

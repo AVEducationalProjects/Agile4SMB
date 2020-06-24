@@ -13,5 +13,6 @@ namespace Agile4SMB.Server.Repositories
         void Delete(OrganizationUnit unit);
         void Update(OrganizationUnit unit);
         void SetAccount(OrganizationUnit unit, Account account);
+        Account GetAccount(string username);
     }
 }
