@@ -26,6 +26,7 @@ namespace Agile4SMB.Server
         {
             services.AddScoped<IOrganizationUnitRepository, OrganizationUnitMongoRepository>();
             services.AddScoped<IBacklogRepository, BacklogMongoRepository>();
+            services.AddScoped<IGoalRepository, GoalMongoRepository>();
             
             services.AddControllersWithViews();
             services.AddRazorPages();

@@ -18,8 +18,8 @@
                 <div class="form-row mb-3">
                     <div class="form-group col-11">
                         <label>Название цели</label>
-                        <InputText class="form-control form-control-sm" type="text"
-                                   @bind-Value="@goal.Name"/>
+                        <input class="form-control form-control-sm" type="text" value="@goal.Name"
+                               @onchange="@(async(e)=>await UpdateGoalName(goal, e))"/>
                     </div>
                     <div class="form-group col-1 text-right">
                         <button class="btn btn-sm btn-outline-danger"
@@ -29,8 +29,8 @@
                     </div>
                     <div class="form-group col-11">
                         <label>Описание</label>
-                        <InputTextArea class="form-control form-control-sm" type="text"
-                                       @bind-Value="@goal.Description"/>
+                        <textarea class="form-control form-control-sm" type="text" value="@goal.Description"
+                                  @onchange="@(async(e)=>await UpdateGoalDescription(goal, e))"></textarea>
                     </div>
                 </div>
             </EditForm>
@@ -51,11 +51,26 @@
     private async Task AddGoal()
     {
         await GoalsService.CreateGoal("Новая цель");
+        _goals = await GoalsService.GetGoals();
+        StateHasChanged();
     }
 
     private async Task DeleteGoal(Goal goal)
     {
         await GoalsService.DeleteGoal(goal);
+        _goals = await GoalsService.GetGoals();
+        StateHasChanged();
     }
 
+    private async Task UpdateGoalName(Goal goal, ChangeEventArgs changeEventArgs)
+    {
+        goal.Name = changeEventArgs.Value.ToString();
+        await GoalsService.UpdateGoal(goal);
+    }
+
+    private async Task UpdateGoalDescription(Goal goal, ChangeEventArgs changeEventArgs)
+    {
+        goal.Description= changeEventArgs.Value.ToString();
+        await GoalsService.UpdateGoal(goal);
+    }
 }
