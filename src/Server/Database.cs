@@ -14,7 +14,7 @@ namespace Agile4SMB.Server
             var database = client.GetDatabase(mongoOptions.Database);
 
             SeedOrganization();
-            SeedBacklogs();
+            SeedProjects();
             SeedGoals();
 
             void SeedOrganization()
@@ -48,33 +48,22 @@ namespace Agile4SMB.Server
                 });
             }
 
-            void SeedBacklogs()
+            void SeedProjects()
             {
-                var collection = database.GetCollection<Backlog>(mongoOptions.BacklogCollection);
+                var collection = database.GetCollection<Project>(mongoOptions.ProjectCollection);
 
                 if (collection.CountDocuments(_ => true) != 0)
                     return;
 
-                collection.InsertOne(new Backlog
+                collection.InsertOne(new Project
                 {
-                    Id = new Guid("00EFDF68-109A-42DB-BBF2-F2C914F3D3D5"),
-                    Projects = new List<Project>
-                    {
-                        new Project
-                        {
-                            Id = new Guid("2D752FB1-D454-4574-80F4-4659B8DFE0C3"),
-                            Name = "ќценка текущего бэклога ICL (не мобильные приложени€)",
-                            State = ProjectState.InProgress,
-                            UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"),
-                            Tasks = new List<ProjectTask>(),
-                            Goals = new List<ProjectGoal>()
-                        }
-                    }
-                });
-                collection.InsertOne(new Backlog
-                {
-                    Id = new Guid("3FCBF137-035A-4AB9-8288-16B6BDC7C1CC"),
-                    Projects = new List<Project>()
+                    Id = new Guid("2D752FB1-D454-4574-80F4-4659B8DFE0C3"),
+                    BacklogId = new Guid("00EFDF68-109A-42DB-BBF2-F2C914F3D3D5"),
+                    Name = "ќценка текущего бэклога ICL (не мобильные приложени€)",
+                    State = ProjectState.InProgress,
+                    UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"),
+                    Tasks = new List<ProjectTask>(),
+                    Goals = new List<ProjectGoal>()
                 });
             }
 
@@ -98,6 +87,6 @@ namespace Agile4SMB.Server
             }
         }
 
-        
+
     }
 }

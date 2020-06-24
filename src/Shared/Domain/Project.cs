@@ -11,6 +11,8 @@ namespace Agile4SMB.Shared.Domain
 
         public Guid UnitId { get; set; }
 
+        public Guid BacklogId { get; set; }
+
         public ProjectState State { get; set; }
 
         public IEnumerable<ProjectTask> Tasks { get; set; }

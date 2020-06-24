@@ -29,7 +29,7 @@ namespace Agile4SMB.Server.Controllers
             if (!id.HasValue)
                 return NotFound();
 
-            return _backlogRepository.Get(id.Value);
+            return _backlogRepository.GetBacklog(id.Value);
         }
 
         [HttpPost]
@@ -50,7 +50,7 @@ namespace Agile4SMB.Server.Controllers
             if (backlog == null)
                 return NotFound();
 
-            _backlogRepository.Update(backlog);
+            _backlogRepository.UpdateBacklog(backlog);
 
             return NoContent();
         }
@@ -61,11 +61,11 @@ namespace Agile4SMB.Server.Controllers
             if (!id.HasValue)
                 return NotFound();
 
-            var backlog = _backlogRepository.Get(id.Value);
+            var backlog = _backlogRepository.GetBacklog(id.Value);
             if (backlog == null)
                 return NotFound(id.Value);
 
-            _backlogRepository.Delete(id.Value);
+            _backlogRepository.DeleteBacklog(id.Value);
 
             return NoContent();
         }

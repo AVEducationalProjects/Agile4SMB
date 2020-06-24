@@ -28,7 +28,7 @@ namespace Agile4SMB.Client.Pages.Backlog
             CurrentBacklog = await BacklogService.GetBacklog(CurrentBacklogDefinition);
             Update();
         }
-        
+
         BacklogDefinition ISelectObserver<BacklogDefinition>.Item => CurrentBacklogDefinition;
 
         public async Task Select(BacklogDefinition item)
@@ -68,7 +68,7 @@ namespace Agile4SMB.Client.Pages.Backlog
             if (CurrentBacklogDefinition == null)
                 return;
 
-            await BacklogService.CreateProjectInBacklog(CurrentBacklogDefinition);
+            (CurrentBacklog, CurrentProject) = await BacklogService.CreateProjectInBacklog("Новый проект", CurrentBacklogDefinition, CurrentUnit);
             StateHasChanged();
         }
 

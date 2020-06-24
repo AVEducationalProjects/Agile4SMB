@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Agile4SMB.Client.Utils;
 using Agile4SMB.Shared.Domain;
+using Agile4SMB.Shared.DTO;
 
 namespace Agile4SMB.Client.Services
 {
@@ -16,39 +18,54 @@ namespace Agile4SMB.Client.Services
         {
             _http = http;
         }
-        
+
         public async Task<Backlog> GetBacklog(BacklogDefinition backlogDefinition)
         {
-            return await  _http.GetFromJsonAsync<Backlog>($"api/Backlogs?id={backlogDefinition.Id}");
+            return await _http.GetFromJsonAsync<Backlog>($"api/Backlogs?id={backlogDefinition.Id}");
+        }
+
+        public async Task<(Backlog, Project)> CreateProjectInBacklog(string name, BacklogDefinition backlogDefinition, OrganizationUnit assignee)
+        {
+            var result = await _http.PostAsJsonAsync($"api/Projects",
+                new CreateProjectDTO { Name = name, BacklogId = backlogDefinition.Id, AssigneeId = assignee.Id });
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось добавить проект.");
+
+            var createdProject = await result.Content.ReadFromJsonAsync<OrganizationUnit>();
+
+            var backlog = await GetBacklog(backlogDefinition);
+            var project = backlog.Projects.Single(x => x.Id == createdProject.Id);
+
+            return (backlog, project);
+        }
+
+        public async Task UpdateProject(Project project)
+        {
+            var result = await _http.PatchAsJsonAsync($"api/Projects", project);
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось обновить проект.");
         }
 
 
-
-        public async Task CreateProjectInBacklog(BacklogDefinition backlogDefinition)
+        public async Task CreateTaskInProject(Project project, string name, OrganizationUnit assignee)
         {
-            //var backlog = GetBacklog(backlogDefinition);
-            //var unit = await GetCurrentUnit();
-            //((List<Project>)backlog.Projects).Add(
-            //    new Project
-            //    {
-            //        Name = "Новый проект",
-            //        UnitId = unit.Id,
-            //        Tasks = new List<ProjectTask>(),
-            //        Goals = new List<ProjectGoal>()
-            //    });
-        }
+            project.Tasks = project.Tasks.Union(new[] {
+                new ProjectTask {
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Done = false,
+                    UnitId = assignee.Id
+                }}).ToArray();
 
-
-        public async Task CreateTaskInProject(Project project, string name)
-        {
-            //var unit = await GetCurrentUnit();
-            //((IList<ProjectTask>)project.Tasks).Add(new ProjectTask { Name = name, UnitId = unit.Id, Done = false });
+            await UpdateProject(project);
         }
 
         public async Task DeleteTaskFromProject(Project project, ProjectTask projectTask)
         {
-            //if (project.Tasks.Contains(projectTask))
-            //    ((IList<ProjectTask>)project.Tasks).Remove(projectTask);
+            project.Tasks = project.Tasks.Where(x => x.Id != projectTask.Id).ToArray();
+            await UpdateProject(project);
         }
 
         public async Task AddProjectGoal(Project project, Guid id, string name)

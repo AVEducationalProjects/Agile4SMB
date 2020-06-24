@@ -8,7 +8,7 @@
 
         public string OrganizationUnitCollection { get; set; }
 
-        public string BacklogCollection { get; set; }
+        public string ProjectCollection { get; set; }
 
         public string GoalCollection { get; set; }
     }

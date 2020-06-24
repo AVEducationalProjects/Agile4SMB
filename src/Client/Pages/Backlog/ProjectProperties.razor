@@ -3,7 +3,6 @@
 @using Agile4SMB.Client.Utils
 @using System.Collections
 @using Agile4SMB.Shared.Domain
-@using Task = Agile4SMB.Shared.Domain.ProjectTask
 
 @inject UserUnitService UserUnitService
 @inject BacklogService BacklogService
@@ -48,7 +47,8 @@
             <label for="projectName">Название проекта</label>
             <textarea id="projectName" class="form-control"
                       value="@Project.Name"
-                      @oninput="ChangeProjectName"></textarea>
+                      @oninput="ChangeProjectName"
+                      @onchange="UpdateProject"></textarea>
         </div>
 
         <div class="form-group">
@@ -83,13 +83,16 @@
                 {
                     <div class="form-row">
                         <div class="form-group col-1">
-                            <input class="form-control form-control-sm" type="checkbox" @bind="task.Done" />
+                            <input class="form-control form-control-sm" type="checkbox" value="@task.Done" 
+                                   @onchange="@(async(e) => await UpdateTaskFlag(task,e))"/>
                         </div>
                         <div class="form-group col-6">
-                            <input class="form-control form-control-sm" type="text" @bind="task.Name" />
+                            <input class="form-control form-control-sm" type="text" value="@task.Name"
+                                   @onchange="@(async(e) => await UpdateTaskName(task,e))"/>
                         </div>
                         <div class="form-group col-4">
-                            <select id="projectAssignee" class="form-control" @bind="@task.UnitId">
+                            <select id="projectAssignee" class="form-control" value="@task.UnitId"
+                                    @onchange="@(async(e) => await UpdateTaskAssignee(task,e))">
                                 @foreach (var unit in UserUnitService.GetOrganizationUnits())
                                 {
                                     <option value=@unit.Id>@unit.Name</option>
@@ -146,60 +149,55 @@
 
     [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
 
+    private async Task UpdateProject()
+    {
+        await BacklogService.UpdateProject(Project);
+    }
+
     #region Change project status
 
 
-    private void Approve()
+    private async Task Approve()
     {
         Project.State = ProjectState.Approved;
+        await UpdateProject();
         SelectObserver.Update();
     }
 
-    private void DoWork()
+    private async Task DoWork()
     {
         Project.State = ProjectState.InProgress;
+        await UpdateProject();
         SelectObserver.Update();
     }
 
-    private void CompleteWork()
+    private async Task CompleteWork()
     {
         Project.State = ProjectState.Done;
+        await UpdateProject();
         SelectObserver.Update();
     }
 
-    private void Resume()
+    private async Task Resume()
     {
         Project.State = ProjectState.InProgress;
+        await UpdateProject();
         SelectObserver.Update();
     }
 
-    private void Pause()
+    private async Task Pause()
     {
         Project.State = ProjectState.Stopped;
+        await UpdateProject();
         SelectObserver.Update();
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
         Project.State = ProjectState.Canceled;
+        await UpdateProject();
         SelectObserver.Update();
     }
-
-    #endregion
-
-    #region Edit Tasks
-
-
-    private async System.Threading.Tasks.Task AddTask()
-    {
-        await BacklogService.CreateTaskInProject(Project, "Новая задача");
-    }
-
-    private async System.Threading.Tasks.Task DeleteTask(Task projectTask)
-    {
-        await BacklogService.DeleteTaskFromProject(Project, projectTask);
-    }
-
 
     #endregion
 
@@ -212,12 +210,46 @@
         SelectObserver.Update();
     }
 
-    private void ChangeProjectAssignee(ChangeEventArgs e)
+    private async Task ChangeProjectAssignee(ChangeEventArgs e)
     {
         Project.UnitId = new Guid(e.Value.ToString());
+        await UpdateProject();
         SelectObserver.Update();
     }
     #endregion
+
+    #region Edit Tasks
+
+    private async Task AddTask()
+    {
+        await BacklogService.CreateTaskInProject(Project, "Новая задача", UserUnitService.GetOrganizationUnit(Project.UnitId));
+    }
+
+    private async Task DeleteTask(ProjectTask projectTask)
+    {
+        await BacklogService.DeleteTaskFromProject(Project, projectTask);
+    }
+
+    private async Task UpdateTaskFlag(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.Done = changeEventArgs.Value.ToString() == "True";
+        await UpdateProject();
+    }
+
+    private async Task UpdateTaskName(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.Name = changeEventArgs.Value.ToString();
+        await UpdateProject();
+    }
+
+    private async Task UpdateTaskAssignee(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.UnitId = new Guid(changeEventArgs.Value.ToString());
+        await UpdateProject();
+    }
+
+    #endregion
+
 
     private IEnumerable<(Guid id, string name, bool actual)> GetGoalsCheckList()
     {
@@ -234,7 +266,7 @@
                     .Select(x => (x.Id, x.Name, true)));
     }
 
-    private async System.Threading.Tasks.Task ToggleGoal((Guid id, string name, bool actual) goal)
+    private async Task ToggleGoal((Guid id, string name, bool actual) goal)
     {
         if (Project.Goals.Any(x => x.Id == goal.id))
         {
