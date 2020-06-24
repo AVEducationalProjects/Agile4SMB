@@ -19,11 +19,13 @@ namespace Agile4SMB.Client.Pages.Backlog
         protected Project CurrentProject { get; set; }
         
         BacklogDefinition ISelectObserver<BacklogDefinition>.Item => CurrentBacklog;
-        public void Select(BacklogDefinition item)
+        public Task Select(BacklogDefinition item)
         {
             CurrentProject = null;
             CurrentBacklog = item;
-            StateHasChanged();
+            Update();
+
+            return Task.CompletedTask;
         }
 
         public void Update()
@@ -32,10 +34,11 @@ namespace Agile4SMB.Client.Pages.Backlog
         }
 
         Project ISelectObserver<Project>.Item => CurrentProject;
-        public void Select(Project item)
+        public Task Select(Project item)
         {
             CurrentProject = item;
-            StateHasChanged();
+            Update();
+            return Task.CompletedTask;
         }
 
         protected override async Task OnParametersSetAsync()

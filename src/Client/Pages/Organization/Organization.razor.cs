@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Agile4SMB.Client.Services;
 using Agile4SMB.Client.Utils;
-using Agile4SMB.Shared;
 using Agile4SMB.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 
@@ -11,20 +10,21 @@ namespace Agile4SMB.Client.Pages.Organization
     {
         [Inject]
         public UserUnitService UserUnitService { get; set; }
-        
+
         protected override async Task OnInitializedAsync()
         {
-            CurrentUnit = await UserUnitService.GetCurrentUnit();
+            UserUnit = await UserUnitService.GetCurrentUnit();
         }
 
-        public OrganizationUnit CurrentUnit;
+        public OrganizationUnit UserUnit;
 
         public OrganizationUnit SelectedUnit { get; set; }
 
         OrganizationUnit ISelectObserver<OrganizationUnit>.Item => SelectedUnit;
 
-        public void Select(OrganizationUnit item)
+        public async Task Select(OrganizationUnit item)
         {
+            UserUnit = await UserUnitService.GetCurrentUnit();
             SelectedUnit = item;
             Update();
         }

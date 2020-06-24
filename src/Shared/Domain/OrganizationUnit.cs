@@ -49,12 +49,31 @@ namespace Agile4SMB.Shared.Domain
                 .FirstOrDefault(result => result != null);
         }
 
+        /// <summary>
+        /// Find unit by username in subtree
+        /// </summary>
+        /// <param name="username">username</param>
+        /// <returns></returns>
         public OrganizationUnit Find(string username)
         {
             if (UserName == username)
                 return this;
             return Children
                 .Select(childUnit => childUnit.Find(username))
+                .FirstOrDefault(result => result != null);
+        }
+
+        /// <summary>
+        /// Find parent for unit with id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public OrganizationUnit FindParent(Guid id)
+        {
+            if (Children.Any(x=>x.Id==id))
+                return this;
+            return Children
+                .Select(childUnit => childUnit.FindParent(id))
                 .FirstOrDefault(result => result != null);
         }
     }

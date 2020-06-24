@@ -56,13 +56,13 @@
     private async Task AddChild()
     {
         var child = await UserUnitService.AddChildOrganizationUnit(Unit, "Новое подразделение");
-        SelectObserver.Select(child);
+        await SelectObserver.Select(child);
     }
 
-    private void Delete()
+    private async Task Delete()
     {
-        var parent = UserUnitService.DeleteOrganizationUnit(Unit);
-        SelectObserver.Select(parent);
+        var parent = await UserUnitService.DeleteOrganizationUnit(Unit);
+        await SelectObserver.Select(parent);
     }
 
     private void DeleteBacklog(BacklogDefinition backlog)

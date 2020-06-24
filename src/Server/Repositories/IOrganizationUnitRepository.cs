@@ -9,5 +9,6 @@ namespace Agile4SMB.Server.Repositories
         OrganizationUnit Get(string username);
         OrganizationUnit Get(Guid id);
         void AddToParent(OrganizationUnit parent, OrganizationUnit child);
+        void Delete(OrganizationUnit unit);
     }
 }

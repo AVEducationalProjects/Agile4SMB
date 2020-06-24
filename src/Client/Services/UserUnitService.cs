@@ -71,6 +71,23 @@ namespace Agile4SMB.Client.Services
             return GetOrganizationUnit(createdUnit.Id);
         }
 
+        public async Task<OrganizationUnit> DeleteOrganizationUnit(OrganizationUnit unit)
+        {
+            if (_currentUnit == unit)
+                return _currentUnit;
+
+            var parent = _currentUnit.FindParent(unit.Id);
+
+            var result = await _http.DeleteAsync($"api/Organization?id={unit.Id}");
+            
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось удалить подразделение.");
+
+            await LoadCurrentUnit();
+
+            return GetOrganizationUnit(parent.Id);
+        }
+
         //====================
 
         private readonly List<Backlog> _backlogs = new List<Backlog>
@@ -127,27 +144,7 @@ namespace Agile4SMB.Client.Services
 
 
 
-        public OrganizationUnit DeleteOrganizationUnit(OrganizationUnit unit)
-        {
-            if (_currentUnit == unit)
-                return _currentUnit;
-
-            var parentUnit = FindParentUnit(_currentUnit, unit);
-            ((IList<OrganizationUnit>)parentUnit.Children).Remove(unit);
-            return parentUnit;
-
-            static OrganizationUnit FindParentUnit(OrganizationUnit baseUnit, OrganizationUnit unitToFind)
-            {
-                if (baseUnit.Children.Contains(unitToFind))
-                    return baseUnit;
-
-                return baseUnit
-                    .Children
-                    .Select(child =>
-                        FindParentUnit(child, unitToFind))
-                    .FirstOrDefault(found => found != null);
-            }
-        }
+       
 
         public void DeleteBacklog(BacklogDefinition backlogToDelete)
         {

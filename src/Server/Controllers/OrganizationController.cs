@@ -40,5 +40,20 @@ namespace Agile4SMB.Server.Controllers
             _organizationUnitRepository.AddToParent(parent, createdUnit);
             return CreatedAtRoute("Organization", createdUnit);
         }
+
+        [HttpDelete]
+        public ActionResult Delete([FromQuery]Guid? id)
+        {
+            if (!id.HasValue)
+                return NotFound();
+
+            var unit = _organizationUnitRepository.Get(id.Value);
+            if (unit == null)
+                return NotFound(id.Value);
+
+            _organizationUnitRepository.Delete(unit);
+
+            return NoContent();
+        }
     }
 }
