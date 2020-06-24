@@ -1,8 +1,10 @@
 ﻿@using Agile4SMB.Shared
 @using Agile4SMB.Client.Services
 @using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
 
-@inject UserService UserService
+@inject UserUnitService UserUnitService
 
 @if (Unit != null)
 {
@@ -46,32 +48,32 @@
 
 @code {
 
-    [Parameter] public OrganizationUnitDTO Unit { get; set; }
+    [Parameter] public OrganizationUnit Unit { get; set; }
 
-    [Parameter] public ISelectObserver<OrganizationUnitDTO> SelectObserver { get; set; }
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
 
 
-    private void AddChild()
+    private async Task AddChild()
     {
-        var child = UserService.AddChildOrganizationUnit(Unit, "Новое подразделение");
+        var child = await UserUnitService.AddChildOrganizationUnit(Unit, "Новое подразделение");
         SelectObserver.Select(child);
     }
 
     private void Delete()
     {
-        var parent = UserService.DeleteOrganizationUnit(Unit);
+        var parent = UserUnitService.DeleteOrganizationUnit(Unit);
         SelectObserver.Select(parent);
     }
 
-    private void DeleteBacklog(BacklogDefinitionDTO backlog)
+    private void DeleteBacklog(BacklogDefinition backlog)
     {
-        UserService.DeleteBacklog(backlog);
+        UserUnitService.DeleteBacklog(backlog);
         StateHasChanged();
     }
 
     private void AddBacklog()
     {
-        UserService.CreateBacklog(Unit, "Новый беклог");
+        UserUnitService.CreateBacklog(Unit, "Новый беклог");
     }
 
     private void BindName(ChangeEventArgs e)

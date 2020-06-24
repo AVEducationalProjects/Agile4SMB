@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Agile4SMB.Server.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +22,15 @@ namespace Agile4SMB.Server
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureServices(ConfigureOptions);
                     webBuilder.UseStartup<Startup>();
                 });
+
+        private static void ConfigureOptions(WebHostBuilderContext context, IServiceCollection services)
+        {
+            services.AddOptions()
+                .Configure<MongoOptions>(context.Configuration.GetSection("Mongo"));
+        }
     }
+
 }

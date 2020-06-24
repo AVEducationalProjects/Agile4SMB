@@ -1,8 +1,10 @@
 ﻿@using Agile4SMB.Shared
 @using Agile4SMB.Client.Services
 @using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
 
-@inject UserService UserService
+@inject UserUnitService UserUnitService
 
 
 <div class="list-group">
@@ -12,7 +14,7 @@
         <div class="list-group-item selectable list-group-item-action @(project==SelectObserver.Item?"active":"")"
              @onclick="@(e => SelectObserver.Select(project))">
             <div class="d-flex w-100 justify-content-between">
-                <small>@UserService.GetOrganizationUnit(project.UnitId).Name</small>
+                <small>@UserUnitService.GetOrganizationUnit(project.UnitId).Name</small>
                 <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
             </div>
             <p class="mb-1 pt-2">@project.Name</p>
@@ -22,15 +24,15 @@
 
 @code {
 
-    [Parameter] public BacklogDefinitionDTO BacklogDefinition { get; set; }
+    [Parameter] public BacklogDefinition BacklogDefinition { get; set; }
 
-    [Parameter] public ISelectObserver<ProjectDTO> SelectObserver { get; set; }
+    [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
     
-    private IEnumerable<ProjectDTO> _projects;
+    private IEnumerable<Project> _projects;
 
     protected override Task OnParametersSetAsync()
     {
-        var backlog = UserService.GetBacklog(BacklogDefinition);
+        var backlog = UserUnitService.GetBacklog(BacklogDefinition);
         _projects = backlog.Projects;
 
         return base.OnParametersSetAsync();

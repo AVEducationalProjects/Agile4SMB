@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Agile4SMB.Shared
+namespace Agile4SMB.Shared.Domain
 {
-    public class ProjectDTO
+    public class Project
     {
         public Guid Id { get; set; }
 
@@ -13,9 +13,9 @@ namespace Agile4SMB.Shared
 
         public ProjectState State { get; set; }
 
-        public IEnumerable<TaskDTO> Tasks { get; set; }
+        public IEnumerable<ProjectTask> Tasks { get; set; }
 
-        public IEnumerable<ProjectGoalDTO> Goals { get; set; }
+        public IEnumerable<ProjectGoal> Goals { get; set; }
 
         public string StringState => State switch
         {
@@ -29,10 +29,10 @@ namespace Agile4SMB.Shared
         };
 
 
-        public ProjectDTO()
+        public Project()
         {
-            Tasks = new TaskDTO[] { };
-            Goals = new ProjectGoalDTO[] { };
+            Tasks = new ProjectTask[] { };
+            Goals = new ProjectGoal[] { };
         }
     }
 }

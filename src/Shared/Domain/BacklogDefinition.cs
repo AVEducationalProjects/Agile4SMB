@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Agile4SMB.Shared
+namespace Agile4SMB.Shared.Domain
 {
-    public class ProjectGoalDTO
+    public class BacklogDefinition
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

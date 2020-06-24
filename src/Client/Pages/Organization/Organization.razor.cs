@@ -1,19 +1,32 @@
-﻿using Agile4SMB.Client.Utils;
+﻿using System.Threading.Tasks;
+using Agile4SMB.Client.Services;
+using Agile4SMB.Client.Utils;
 using Agile4SMB.Shared;
+using Agile4SMB.Shared.Domain;
 using Microsoft.AspNetCore.Components;
 
 namespace Agile4SMB.Client.Pages.Organization
 {
-    public class OrganizationBase : ComponentBase, ISelectObserver<OrganizationUnitDTO>
+    public class OrganizationBase : ComponentBase, ISelectObserver<OrganizationUnit>
     {
-        public OrganizationUnitDTO SelectedUnit { get; set; }
+        [Inject]
+        public UserUnitService UserUnitService { get; set; }
+        
+        protected override async Task OnInitializedAsync()
+        {
+            CurrentUnit = await UserUnitService.GetCurrentUnit();
+        }
 
-        OrganizationUnitDTO ISelectObserver<OrganizationUnitDTO>.Item => SelectedUnit;
+        public OrganizationUnit CurrentUnit;
 
-        public void Select(OrganizationUnitDTO item)
+        public OrganizationUnit SelectedUnit { get; set; }
+
+        OrganizationUnit ISelectObserver<OrganizationUnit>.Item => SelectedUnit;
+
+        public void Select(OrganizationUnit item)
         {
             SelectedUnit = item;
-            StateHasChanged();
+            Update();
         }
 
         public void Update()

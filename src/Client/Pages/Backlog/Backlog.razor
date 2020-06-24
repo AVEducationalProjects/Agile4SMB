@@ -1,11 +1,14 @@
-﻿@inherits BacklogBase
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
+@inherits BacklogBase
 
 @page "/"
 
 <div class="row">
     <div class="col-5">
 
-        <BacklogsDropdown Unit="@UserService.CurrentUnit"
+        <BacklogsDropdown Unit="@_currentUnit"
                           SelectObserver="@this" />
 
         <div class="d-flex w-100 justify-content-between mb-2">
@@ -27,4 +30,12 @@
 </div>
 
 @code{
+
+    private OrganizationUnit _currentUnit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentUnit = await UserUnitService.GetCurrentUnit();
+    }
+
 }

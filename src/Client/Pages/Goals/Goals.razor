@@ -1,8 +1,9 @@
 ﻿@page "/goals"
 @using Agile4SMB.Client.Services
 @using Agile4SMB.Shared
+@using Agile4SMB.Shared.Domain
 
-@inject UserService UserService
+@inject UserUnitService UserUnitService
 
 
 <div class="d-flex w-100 justify-content-between mb-3">
@@ -10,7 +11,7 @@
 </div>
 
 <div class="list-group">
-    @foreach (var goal in UserService.GetGoals())
+    @foreach (var goal in UserUnitService.GetGoals())
     {
         <EditForm Model="@goal">
             <div class="form-row mb-3">
@@ -39,12 +40,12 @@
 
     private void AddGoal()
     {
-        UserService.CreateGoal("Новая цель");
+        UserUnitService.CreateGoal("Новая цель");
     }
 
-    private void DeleteGoal(GoalDTO goal)
+    private void DeleteGoal(Goal goal)
     {
-        UserService.DeleteGoal(goal);
+        UserUnitService.DeleteGoal(goal);
     }
 
 }

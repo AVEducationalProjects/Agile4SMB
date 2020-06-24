@@ -1,4 +1,4 @@
-﻿namespace Agile4SMB.Shared
+﻿namespace Agile4SMB.Shared.Domain
 {
     public enum ProjectState
     {
