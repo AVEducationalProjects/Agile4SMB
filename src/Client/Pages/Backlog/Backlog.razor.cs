@@ -13,6 +13,7 @@ namespace Agile4SMB.Client.Pages.Backlog
     public class BacklogBase : ComponentBase, ISelectObserver<BacklogDefinition>, ISelectObserver<Project>
     {
         [Inject] public UserUnitService UserUnitService { get; set; }
+        [Inject] public BacklogService BacklogService { get; set; }
 
         protected BacklogDefinition CurrentBacklog { get; set; }
 
@@ -52,12 +53,12 @@ namespace Agile4SMB.Client.Pages.Backlog
             await base.OnParametersSetAsync();
         }
 
-        protected void AddProject()
+        protected async Task AddProject()
         {
             if (CurrentBacklog == null)
                 return;
 
-            UserUnitService.CreateProjectInBacklog(CurrentBacklog);
+            await BacklogService.CreateProjectInBacklog(CurrentBacklog);
             StateHasChanged();
         }
 

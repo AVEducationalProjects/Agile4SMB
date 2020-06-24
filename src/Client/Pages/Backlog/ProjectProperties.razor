@@ -6,6 +6,8 @@
 @using Task = Agile4SMB.Shared.Domain.ProjectTask
 
 @inject UserUnitService UserUnitService
+@inject BacklogService BacklogService
+@inject GoalsService GoalsService
 
 @if (Project != null)
 {
@@ -190,12 +192,12 @@
 
     private async System.Threading.Tasks.Task AddTask()
     {
-        await UserUnitService.CreateTaskInProject(Project, "Новая задача");
+        await BacklogService.CreateTaskInProject(Project, "Новая задача");
     }
 
-    private void DeleteTask(Task projectTask)
+    private async System.Threading.Tasks.Task DeleteTask(Task projectTask)
     {
-        UserUnitService.DeleteTaskFromProject(Project, projectTask);
+        await BacklogService.DeleteTaskFromProject(Project, projectTask);
     }
 
 
@@ -215,13 +217,11 @@
         Project.UnitId = new Guid(e.Value.ToString());
         SelectObserver.Update();
     }
-
-
     #endregion
 
     private IEnumerable<(Guid id, string name, bool actual)> GetGoalsCheckList()
     {
-        var goals = UserUnitService.GetGoals().ToArray();
+        var goals = GoalsService.GetGoals().Result.ToArray();
         var currentGoals = Project.Goals.ToArray();
 
         return goals
@@ -234,16 +234,16 @@
                     .Select(x => (x.Id, x.Name, true)));
     }
 
-    private void ToggleGoal((Guid id, string name, bool actual) goal)
+    private async System.Threading.Tasks.Task ToggleGoal((Guid id, string name, bool actual) goal)
     {
         if (Project.Goals.Any(x => x.Id == goal.id))
         {
-            UserUnitService.DeleteProjectGoal(Project,
-                Project.Goals.Single(x => x.Id == goal.id));
+            await BacklogService.DeleteProjectGoal(Project,
+            Project.Goals.Single(x => x.Id == goal.id));
         }
         else
         {
-            UserUnitService.AddProjectGoal(Project, goal.id, goal.name);
+            await BacklogService.AddProjectGoal(Project, goal.id, goal.name);
         }
         StateHasChanged();
     }

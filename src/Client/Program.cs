@@ -16,6 +16,8 @@ namespace Agile4SMB.Client
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<UserUnitService>();
+            builder.Services.AddScoped<BacklogService>();
+            builder.Services.AddScoped<GoalsService>();
 
             await builder.Build().RunAsync();
         }

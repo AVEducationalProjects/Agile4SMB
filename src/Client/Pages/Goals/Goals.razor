@@ -3,49 +3,59 @@
 @using Agile4SMB.Shared
 @using Agile4SMB.Shared.Domain
 
-@inject UserUnitService UserUnitService
+@inject GoalsService GoalsService
 
+@if (_goals != null)
+{
+    <div class="d-flex w-100 justify-content-between mb-3">
+        <button class="btn btn-sm btn-success" @onclick="AddGoal"><i class="oi oi-fire"/>&nbsp;Новая</button>
+    </div>
 
-<div class="d-flex w-100 justify-content-between mb-3">
-    <button class="btn btn-sm btn-success" @onclick="AddGoal"><i class="oi oi-fire" />&nbsp;Новая</button>
-</div>
-
-<div class="list-group">
-    @foreach (var goal in UserUnitService.GetGoals())
-    {
-        <EditForm Model="@goal">
-            <div class="form-row mb-3">
-                <div class="form-group col-11">
-                    <label>Название цели</label>
-                    <InputText class="form-control form-control-sm" type="text"
-                               @bind-Value="@goal.Name"/>
+    <div class="list-group">
+        @foreach (var goal in _goals)
+        {
+            <EditForm Model="@goal">
+                <div class="form-row mb-3">
+                    <div class="form-group col-11">
+                        <label>Название цели</label>
+                        <InputText class="form-control form-control-sm" type="text"
+                                   @bind-Value="@goal.Name"/>
+                    </div>
+                    <div class="form-group col-1 text-right">
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="() => DeleteGoal(goal)">
+                            <i class="oi oi-x"></i>
+                        </button>
+                    </div>
+                    <div class="form-group col-11">
+                        <label>Описание</label>
+                        <InputTextArea class="form-control form-control-sm" type="text"
+                                       @bind-Value="@goal.Description"/>
+                    </div>
                 </div>
-                <div class="form-group col-1 text-right">
-                    <button class="btn btn-sm btn-outline-danger"
-                            @onclick="()=>DeleteGoal(goal)"><i class="oi oi-x"></i></button>
-                </div>
-                <div class="form-group col-11">
-                    <label>Описание</label>
-                    <InputTextArea class="form-control form-control-sm" type="text"
-                                   @bind-Value="@goal.Description"/>
-                </div>
-            </div>
-        </EditForm>
-    }
-</div>
+            </EditForm>
+        }
+    </div>
+}
 
 
 @code{
 
+    IEnumerable<Goal> _goals;
 
-    private void AddGoal()
+    protected override async Task OnInitializedAsync()
     {
-        UserUnitService.CreateGoal("Новая цель");
+        _goals = await GoalsService.GetGoals();
     }
 
-    private void DeleteGoal(Goal goal)
+    private async Task AddGoal()
     {
-        UserUnitService.DeleteGoal(goal);
+        await GoalsService.CreateGoal("Новая цель");
+    }
+
+    private async Task DeleteGoal(Goal goal)
+    {
+        await GoalsService.DeleteGoal(goal);
     }
 
 }

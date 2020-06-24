@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
-namespace Agile4SMB.Client.Services
+namespace Agile4SMB.Client.Utils
 {
     public static class HttpExtensions
     {

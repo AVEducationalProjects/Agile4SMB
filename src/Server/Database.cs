@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Agile4SMB.Server.Options;
-using Agile4SMB.Shared;
 using Agile4SMB.Shared.Domain;
 using MongoDB.Driver;
 
@@ -15,13 +14,16 @@ namespace Agile4SMB.Server
             var database = client.GetDatabase(mongoOptions.Database);
 
             SeedOrganization();
+            SeedBacklogs();
+            SeedGoals();
 
             void SeedOrganization()
             {
                 var collection = database.GetCollection<OrganizationUnit>(mongoOptions.OrganizationUnitCollection);
-                
-                if(collection.CountDocuments(_ =>true ) != 0)
+
+                if (collection.CountDocuments(_ => true) != 0)
                     return;
+
                 collection.InsertOne(new OrganizationUnit
                 {
                     Id = new Guid("14B7DA88-B31E-4380-8807-868C997D4D45"),
@@ -43,6 +45,55 @@ namespace Agile4SMB.Server
                         new OrganizationUnit {Id = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"), Name = "БН \"Сервис\""},
                         new OrganizationUnit {Id = new Guid("B3E14931-DD4F-4FE4-91D1-F2F5F8DC1454"), Name = "БН \"Производство\""},
                     }
+                });
+            }
+
+            void SeedBacklogs()
+            {
+                var collection = database.GetCollection<Backlog>(mongoOptions.BacklogCollection);
+
+                if (collection.CountDocuments(_ => true) != 0)
+                    return;
+
+                collection.InsertOne(new Backlog
+                {
+                    Id = new Guid("00EFDF68-109A-42DB-BBF2-F2C914F3D3D5"),
+                    Projects = new List<Project>
+                    {
+                        new Project
+                        {
+                            Id = new Guid("2D752FB1-D454-4574-80F4-4659B8DFE0C3"),
+                            Name = "Оценка текущего бэклога ICL (не мобильные приложения)",
+                            State = ProjectState.InProgress,
+                            UnitId = new Guid("3ABBC46F-3243-4E45-855C-5AC702F5ECC8"),
+                            Tasks = new List<ProjectTask>(),
+                            Goals = new List<ProjectGoal>()
+                        }
+                    }
+                });
+                collection.InsertOne(new Backlog
+                {
+                    Id = new Guid("3FCBF137-035A-4AB9-8288-16B6BDC7C1CC"),
+                    Projects = new List<Project>()
+                });
+            }
+
+            void SeedGoals()
+            {
+                var collection = database.GetCollection<Goal>(mongoOptions.GoalCollection);
+
+                if (collection.CountDocuments(_ => true) != 0)
+                    return;
+
+                collection.InsertOne(new Goal
+                {
+                    Id = new Guid("BB0A6A9D-0F83-461F-A5AE-CBF1FE0B781C"),
+                    Name = "Выручка с больших клиентов 20 млн. руб. (2020 год) "
+                });
+                collection.InsertOne(new Goal
+                {
+                    Id = new Guid("4363A829-82A5-412C-9995-4A9145E92606"),
+                    Name = "Выручка с существующих клиентов 15 млн. руб. (2020 год) "
                 });
             }
         }

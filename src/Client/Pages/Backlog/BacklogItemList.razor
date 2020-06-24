@@ -5,6 +5,7 @@
 @using Task = System.Threading.Tasks.Task
 
 @inject UserUnitService UserUnitService
+@inject BacklogService BacklogService
 
 
 <div class="list-group">
@@ -27,15 +28,13 @@
     [Parameter] public BacklogDefinition BacklogDefinition { get; set; }
 
     [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
-    
+
     private IEnumerable<Project> _projects;
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        var backlog = UserUnitService.GetBacklog(BacklogDefinition);
+        var backlog = await BacklogService.GetBacklog(BacklogDefinition);
         _projects = backlog.Projects;
-
-        return base.OnParametersSetAsync();
     }
 
 }
