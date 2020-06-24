@@ -25,6 +25,7 @@ namespace Agile4SMB.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IOrganizationUnitRepository, OrganizationUnitMongoRepository>();
+            services.AddScoped<IBacklogRepository, BacklogMongoRepository>();
             
             services.AddControllersWithViews();
             services.AddRazorPages();

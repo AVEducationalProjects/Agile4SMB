@@ -78,7 +78,7 @@ namespace Agile4SMB.Client.Services
             var parent = _currentUnit.FindParent(unit.Id);
 
             var result = await _http.DeleteAsync($"api/Organization?id={unit.Id}");
-            
+
             if (!result.IsSuccessStatusCode)
                 throw new ApplicationException("Не получилось удалить подразделение.");
 
@@ -89,13 +89,45 @@ namespace Agile4SMB.Client.Services
 
         public async Task UpdateOrganizationUnit(OrganizationUnit unit)
         {
-            var updateInfo = new OrganizationUnit {Id = unit.Id, Name = unit.Name};
-            var result = await  _http.PatchAsJsonAsync($"api/Organization", updateInfo);
+            var updateInfo = new OrganizationUnit { Id = unit.Id, Name = unit.Name };
+            var result = await _http.PatchAsJsonAsync($"api/Organization", updateInfo);
 
             if (!result.IsSuccessStatusCode)
                 throw new ApplicationException("Не получилось обновить подразделение.");
         }
 
+        public async Task<BacklogDefinition> CreateBacklog(OrganizationUnit unit, string name)
+        {
+            var result = await _http.PostAsJsonAsync($"api/Backlogs",
+                new CreateBacklogDTO { UnitId = unit.Id, Name = name });
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось создать беклог.");
+
+            var createdBacklogDef = await result.Content.ReadFromJsonAsync<BacklogDefinition>();
+
+            await LoadCurrentUnit();
+
+            return GetOrganizationUnit(unit.Id).Backlogs.Single(x => x.Id == createdBacklogDef.Id);
+        }
+
+        public async Task DeleteBacklog(BacklogDefinition backlogToDelete)
+        {
+            var result = await _http.DeleteAsync($"api/Backlogs?id={backlogToDelete.Id}");
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось удалить беклог.");
+
+            await LoadCurrentUnit();
+        }
+
+        public async Task UpdateBacklog(BacklogDefinition backlog)
+        {
+            var result = await _http.PatchAsJsonAsync($"api/Backlogs", backlog);
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось обновить беклог.");
+        }
 
         //====================
 
@@ -153,37 +185,12 @@ namespace Agile4SMB.Client.Services
 
 
 
-       
-
-        public void DeleteBacklog(BacklogDefinition backlogToDelete)
-        {
-            var unit = GetOwner(backlogToDelete, _currentUnit);
-            ((IList<BacklogDefinition>)unit.Backlogs).Remove(backlogToDelete);
-
-            static OrganizationUnit GetOwner(BacklogDefinition backlog, OrganizationUnit unit)
-            {
-                if (unit.Backlogs.Contains(backlog))
-                    return unit;
-
-                return unit
-                    .Children
-                    .FirstOrDefault(child => GetOwner(backlog, child) != null);
-            }
-
-        }
 
 
-        public BacklogDefinition CreateBacklog(OrganizationUnit unit, string name)
-        {
-            var id = Guid.NewGuid();
-            var newDef = new BacklogDefinition { Id = id, Name = name };
-            var newBacklog = new Backlog { Id = id, Projects = new List<Project>() };
 
-            _backlogs.Add(newBacklog);
-            ((IList<BacklogDefinition>)unit.Backlogs).Add(newDef);
 
-            return newDef;
-        }
+
+
 
         private IList<Goal> _goals = new List<Goal>
         {
@@ -229,5 +236,7 @@ namespace Agile4SMB.Client.Services
         {
             ((IList<ProjectGoal>)project.Goals).Add(new ProjectGoal { Id = id, Name = name });
         }
+
+
     }
 }

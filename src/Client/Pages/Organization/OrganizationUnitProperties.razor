@@ -28,7 +28,7 @@
                     <div class="form-row">
                         <div class="form-group col-11">
                             <input class="form-control form-control-sm" type="text"
-                                   @bind-value="@backlog.Name" />
+                                   value="@backlog.Name" @onchange="@(async (e) => await UpdateBacklogName(backlog, e))" />
                         </div>
                         <div class="form-group col-1 text-right">
                             <button class="btn btn-sm btn-outline-danger"
@@ -65,17 +65,6 @@
         await SelectObserver.Select(parent);
     }
 
-    private void DeleteBacklog(BacklogDefinition backlog)
-    {
-        UserUnitService.DeleteBacklog(backlog);
-        StateHasChanged();
-    }
-
-    private void AddBacklog()
-    {
-        UserUnitService.CreateBacklog(Unit, "Новый беклог");
-    }
-
     private void BindName(ChangeEventArgs e)
     {
         Unit.Name = e.Value.ToString();
@@ -85,6 +74,25 @@
     private async Task UpdateData()
     {
         await UserUnitService.UpdateOrganizationUnit(Unit);
+    }
+
+    private async Task AddBacklog()
+    {
+        await UserUnitService.CreateBacklog(Unit, "Новый беклог");
+        await SelectObserver.Select(UserUnitService.GetOrganizationUnit(Unit.Id));
+    }
+
+    private async Task DeleteBacklog(BacklogDefinition backlog)
+    {
+        await UserUnitService.DeleteBacklog(backlog);
+        await SelectObserver.Select(UserUnitService.GetOrganizationUnit(Unit.Id));
+    }
+
+
+    private async Task UpdateBacklogName(BacklogDefinition backlog, ChangeEventArgs changeEventArgs)
+    {
+        backlog.Name = changeEventArgs.Value.ToString();
+        await UserUnitService.UpdateBacklog(backlog);
     }
 
 }

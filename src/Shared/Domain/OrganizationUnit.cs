@@ -76,5 +76,19 @@ namespace Agile4SMB.Shared.Domain
                 .Select(childUnit => childUnit.FindParent(id))
                 .FirstOrDefault(result => result != null);
         }
+
+        /// <summary>
+        /// Find unit with backlog identified by id in subtree
+        /// </summary>
+        /// <param name="username">username</param>
+        /// <returns></returns>
+        public OrganizationUnit FindWithBacklog(Guid id)
+        {
+            if (Backlogs.Any(x=>x.Id==id))
+                return this;
+            return Children
+                .Select(childUnit => childUnit.FindWithBacklog(id))
+                .FirstOrDefault(result => result != null);        
+        }
     }
 }
