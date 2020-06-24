@@ -52,5 +52,13 @@ namespace Agile4SMB.Server.Repositories
             parent.Children = parent.Children.Where(x => x.Id != unit.Id).ToArray();
             _organizationUnitCollection.ReplaceOne(x => x.Id == root.Id, root);
         }
+
+        public void Update(OrganizationUnit unit)
+        {
+            var root = _organizationUnitCollection.FindSync(_ => true).Single();
+            var updatedUnit = root.Find(unit.Id);
+            updatedUnit.Name = unit.Name;
+            _organizationUnitCollection.ReplaceOne(x => x.Id == root.Id, root);
+        }
     }
 }

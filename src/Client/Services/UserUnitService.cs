@@ -31,8 +31,7 @@ namespace Agile4SMB.Client.Services
             return _currentUnit;
         }
 
-
-        private async System.Threading.Tasks.Task LoadCurrentUnit()
+        private async Task LoadCurrentUnit()
         {
             _currentUnit = await _http.GetFromJsonAsync<OrganizationUnit>("api/Organization");
         }
@@ -87,6 +86,16 @@ namespace Agile4SMB.Client.Services
 
             return GetOrganizationUnit(parent.Id);
         }
+
+        public async Task UpdateOrganizationUnit(OrganizationUnit unit)
+        {
+            var updateInfo = new OrganizationUnit {Id = unit.Id, Name = unit.Name};
+            var result = await  _http.PatchAsJsonAsync($"api/Organization", updateInfo);
+
+            if (!result.IsSuccessStatusCode)
+                throw new ApplicationException("Не получилось обновить подразделение.");
+        }
+
 
         //====================
 

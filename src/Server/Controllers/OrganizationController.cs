@@ -55,5 +55,20 @@ namespace Agile4SMB.Server.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch]
+        public ActionResult Patch(OrganizationUnit unit)
+        {
+            if (unit == null)
+                return NotFound();
+
+            var unitToPatch = _organizationUnitRepository.Get(unit.Id);
+            if (unitToPatch == null)
+                return NotFound(unit.Id);
+
+            _organizationUnitRepository.Update(unit);
+
+            return NoContent();
+        }
     }
 }
