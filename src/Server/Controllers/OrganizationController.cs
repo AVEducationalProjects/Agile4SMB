@@ -23,7 +23,7 @@ namespace Agile4SMB.Server.Controllers
         [HttpGet(Name = "Organization")]
         public ActionResult<OrganizationUnit> Get()
         {
-            return Ok(_organizationUnitRepository.Get("Admin"));
+            return Ok(_organizationUnitRepository.Get(User.Identity.Name));
         }
 
         [HttpPost]

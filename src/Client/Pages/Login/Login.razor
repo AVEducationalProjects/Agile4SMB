@@ -5,18 +5,22 @@
 @inject IJSRuntime JSRuntime
 
 <div class="container">
-    <div class="row">
+    <div class="row my-5">
         <div class="col-6 offset-3">
+            <h1 class="text-center mb-5">Войти в Agile4SMB</h1>
+
             <div class="form-group">
-                <label for="login">Имя пользователя</label>
-                <input type="text" class="form-control" id="login" aria-describedby="emailHelp" @bind="_username">
+                <div class="form-group">
+                    <label for="login">Имя пользователя</label>
+                    <input type="text" class="form-control" id="login" aria-describedby="emailHelp" @bind="_username">
+                </div>
+                <div class="form-group mb-5">
+                    <label for="password">Пароль</label>
+                    <input type="password" class="form-control" id="password" @bind="_password">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Пароль</label>
-                <input type="password" class="form-control" id="password" @bind="_password">
-            </div>
-            <button type="submit" class="btn btn-primary" @onclick="SignIn">Войти</button>
-            
+            <button type="submit" class="btn btn-primary btn-block" @onclick="SignIn">Войти</button>
+
             @if (_loginError)
             {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert" id="loginError">
