@@ -59,13 +59,13 @@ namespace Agile4SMB.Server
             {
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
-                Database.Seed(Configuration.GetSection("Mongo").Get<MongoOptions>());
             }
             else
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            Database.Seed(Configuration.GetSection("Mongo").Get<MongoOptions>());
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
