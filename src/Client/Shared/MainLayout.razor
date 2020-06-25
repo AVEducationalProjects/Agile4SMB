@@ -1,19 +1,36 @@
-﻿@using Agile4SMB.Client.Pages.Backlog
+﻿@using Agile4SMB.Client.Services
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+@functions {
+    private async Task Logout()
+    {
+        await ((AuthStateProvider) AuthenticationStateProvider).SignOut();
+    }
+}
+
 
 <button type="button" class="mobile-nav-toggle d-xl-none"><i class="oi oi-menu"></i></button>
 
-<header id="header" class="d-flex flex-column justify-content-center">
-    <nav class="nav-menu">
-        <ul>
-            <li><NavLink href="" Match="NavLinkMatch.All"><i class="oi oi-list-rich"></i> <span>Проекты</span></NavLink></li>
-            <li><NavLink href="organization"><i class="oi oi-people"></i> <span>Организация</span></NavLink></li>
-            <li><NavLink href="goals"><i class="oi oi-fire"></i> <span>Цели</span></NavLink></li>
-        </ul>
-    </nav>
-</header>
+<AuthorizeView>
+    <Authorized>
+        <header id="header" class="d-flex flex-column justify-content-center">
+            <nav class="nav-menu">
+                <ul>
+                    <li><NavLink href="" Match="NavLinkMatch.All"><i class="oi oi-list-rich"></i> <span>Проекты</span></NavLink></li>
+                    <li><NavLink href="organization"><i class="oi oi-people"></i> <span>Организация</span></NavLink></li>
+                    <li><NavLink href="goals"><i class="oi oi-fire"></i> <span>Цели</span></NavLink></li>
+                    <li><a @onclick="Logout"><i class="oi oi-account-logout"></i> <span>Выход</span></a></li>
+                </ul>
+            </nav>
+        </header>
+    </Authorized>
+</AuthorizeView>
 
 <main id="main" class="container py-5">
     @Body
 </main>
+
+

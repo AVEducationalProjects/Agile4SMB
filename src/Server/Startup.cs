@@ -34,9 +34,8 @@ namespace Agile4SMB.Server
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "PAM",
-                        ValidateAudience = true,
-                        ValidAudience = "*.PAM",
+                        ValidIssuer = "Agile4SMB",
+                        ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = Configuration.GetSection("JWT").Get<JWTOptions>().GetSigningKey()
@@ -68,13 +67,14 @@ namespace Agile4SMB.Server
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
-
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

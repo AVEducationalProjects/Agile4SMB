@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using Agile4SMB.Server.Model;
 using Agile4SMB.Server.Repositories;
 using Agile4SMB.Shared.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Agile4SMB.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase

@@ -1,8 +1,7 @@
-﻿@using Agile4SMB.Shared
-@using Agile4SMB.Shared.Domain
-@using Task = System.Threading.Tasks.Task
+﻿@using Microsoft.AspNetCore.Authorization
 @inherits BacklogBase
 
+@attribute [Authorize]
 @page "/"
 
 <div class="row">
@@ -22,13 +21,13 @@
 
     <div class="col-7">
         <div class="sticky-top">
-            <ProjectProperties Project="@CurrentProject" SelectObserver="@this"/>
+            <ProjectProperties Project="@CurrentProject" SelectObserver="@this" />
         </div>
     </div>
 </div>
 
 @code{
 
-    
+
 
 }

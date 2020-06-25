@@ -1,14 +1,16 @@
 ﻿@page "/goals"
+@attribute [Authorize]
+
 @using Agile4SMB.Client.Services
-@using Agile4SMB.Shared
 @using Agile4SMB.Shared.Domain
+@using Microsoft.AspNetCore.Authorization
 
 @inject GoalsService GoalsService
 
 @if (_goals != null)
 {
     <div class="d-flex w-100 justify-content-between mb-3">
-        <button class="btn btn-sm btn-success" @onclick="AddGoal"><i class="oi oi-fire"/>&nbsp;Новая</button>
+        <button class="btn btn-sm btn-success" @onclick="AddGoal"><i class="oi oi-fire" />&nbsp;Новая</button>
     </div>
 
     <div class="list-group">
@@ -19,7 +21,7 @@
                     <div class="form-group col-11">
                         <label>Название цели</label>
                         <input class="form-control form-control-sm" type="text" value="@goal.Name"
-                               @onchange="@(async(e)=>await UpdateGoalName(goal, e))"/>
+                               @onchange="@(async(e)=>await UpdateGoalName(goal, e))" />
                     </div>
                     <div class="form-group col-1 text-right">
                         <button class="btn btn-sm btn-outline-danger"
@@ -70,7 +72,7 @@
 
     private async Task UpdateGoalDescription(Goal goal, ChangeEventArgs changeEventArgs)
     {
-        goal.Description= changeEventArgs.Value.ToString();
+        goal.Description = changeEventArgs.Value.ToString();
         await GoalsService.UpdateGoal(goal);
     }
 }

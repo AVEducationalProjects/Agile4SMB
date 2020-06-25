@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using Agile4SMB.Server.Repositories;
 using Agile4SMB.Shared.Domain;
 using Agile4SMB.Shared.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Agile4SMB.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class GoalsController : ControllerBase

@@ -1,21 +1,20 @@
 ﻿@inherits OrganizationBase
+@attribute [Authorize]
 
 @page "/organization"
-@using Agile4SMB.Client.Services
-@using Agile4SMB.Shared
-@using Agile4SMB.Shared.Domain
+@using Microsoft.AspNetCore.Authorization
 
 
 @if (UserUnit != null)
 {
     <div class="row">
         <div class="col-5">
-            <OrganizationUnitTree Unit="@UserUnit" SelectObserver="@this"/>
+            <OrganizationUnitTree Unit="@UserUnit" SelectObserver="@this" />
         </div>
 
         <div class="col-7">
             <div class="sticky-top">
-                <OrganizationUnitProperties Unit="@SelectedUnit" SelectObserver="@this"/>
+                <OrganizationUnitProperties Unit="@SelectedUnit" SelectObserver="@this" />
             </div>
         </div>
 
