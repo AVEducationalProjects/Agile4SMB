@@ -1,0 +1,299 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@using System.Collections
+@using Agile4SMB.Shared.Domain
+
+@inject UserUnitService UserUnitService
+@inject BacklogService BacklogService
+@inject GoalsService GoalsService
+
+@if (Project != null)
+{
+    <div class="d-flex w-100 justify-content-between mb-3 pt-2">
+        @if (Project.State == ProjectState.New)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="Approve"> <i class="oi oi-media-play" />&nbsp;&nbsp;Согласовать  </button>
+        }
+
+        @if (Project.State == ProjectState.Approved)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="DoWork"> <i class="oi oi-media-play" />&nbsp;&nbsp;В работу  </button>
+        }
+
+        @if (Project.State == ProjectState.InProgress)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="CompleteWork"> <i class="oi oi-media-play" />&nbsp;&nbsp;Завершить  </button>
+        }
+
+        @if (Project.State == ProjectState.Stopped)
+        {
+            <button class="btn btn-sm btn-primary" @onclick="Resume"> <i class="oi oi-media-play" />&nbsp;&nbsp;Возобновить</button>
+        }
+
+        @if (Project.State == ProjectState.InProgress)
+        {
+            <button class="btn btn-sm btn-warning" @onclick="Pause"> <i class="oi oi-media-pause" />&nbsp;&nbsp;Приостановить</button>
+        }
+
+        @if (Project.State != ProjectState.Done && Project.State != ProjectState.Canceled)
+        {
+            <button class="btn btn-sm btn-danger" @onclick="Cancel"> <i class="oi oi-media-stop" />&nbsp;&nbsp;Отменить</button>
+        }
+    </div>
+
+    <div>
+        <div class="form-group">
+            <label for="projectName">Название проекта</label>
+            <textarea id="projectName" class="form-control"
+                      value="@Project.Name"
+                      @oninput="ChangeProjectName"
+                      @onchange="UpdateProject"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="projectPurpose">Соответствие целям</label>
+            <ul>
+                @foreach (var goal in Project.Goals)
+                {
+                    <li>@goal.Name</li>
+                }
+            </ul>
+
+            <button id="projectPurpose" class="btn btn-sm btn-outline-info"
+                    data-toggle="modal" data-target="#goalsModal">
+                Определить соответствие целям
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label for="projectAssignee">Ответственный</label>
+            <select id="projectAssignee" class="form-control" value="@Project.UnitId" @onchange="ChangeProjectAssignee">
+                @foreach (var unit in UserUnitService.GetOrganizationUnits())
+                {
+                    <option value=@unit.Id>@unit.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="projectAssignee">Задачи</label>
+            <div class="list-group">
+                @foreach (var task in Project.Tasks)
+                {
+                    <div class="form-row">
+                        <div class="form-group col-1">
+                            <input class="form-control form-control-sm" type="checkbox" checked="@task.Done"
+                                   @onchange="@(async(e) => await UpdateTaskFlag(task,e))" />
+                        </div>
+                        <div class="form-group col-6">
+                            <input class="form-control form-control-sm" type="text" value="@task.Name"
+                                   @onchange="@(async(e) => await UpdateTaskName(task,e))" />
+                        </div>
+                        <div class="form-group col-4">
+                            <select id="projectAssignee" class="form-control" value="@task.UnitId"
+                                    @onchange="@(async(e) => await UpdateTaskAssignee(task,e))">
+                                @foreach (var unit in UserUnitService.GetOrganizationUnits())
+                                {
+                                    <option value=@unit.Id>@unit.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-1 text-right">
+                            <button class="btn btn-sm btn-outline-danger" @onclick="()=> DeleteTask(task)"><i class="oi oi-x"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button id="addTask" class="btn btn-sm btn-outline-success" @onclick="AddTask">Добавить задачу</button>
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="goalsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Соответствие целям</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (_goalList != null)
+                    {
+                        @foreach (var goal in _goalList)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       id="@($"chk-goal-{goal.id:N}")"
+                                       checked="@goal.actual" @onchange="@(async (e) => await ToggleGoal(goal.id, e))" />
+                                <label class="form-check-label"
+                                       for="@($"chk-goal-{goal.id:N}")">@goal.name</label>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+}
+
+@code {
+
+    [Parameter] public Project Project { get; set; }
+
+    [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
+
+    private IEnumerable<(Guid id, string name, bool actual)> _goalList;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _goalList = await GetGoalsCheckList();
+        StateHasChanged();
+    }
+
+    private async Task UpdateProject()
+    {
+        await BacklogService.UpdateProject(Project);
+    }
+
+    #region Change project status
+
+
+    private async Task Approve()
+    {
+        Project.State = ProjectState.Approved;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    private async Task DoWork()
+    {
+        Project.State = ProjectState.InProgress;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    private async Task CompleteWork()
+    {
+        Project.State = ProjectState.Done;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    private async Task Resume()
+    {
+        Project.State = ProjectState.InProgress;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    private async Task Pause()
+    {
+        Project.State = ProjectState.Stopped;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    private async Task Cancel()
+    {
+        Project.State = ProjectState.Canceled;
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+
+    #endregion
+
+    #region Real-time binding
+
+
+    private void ChangeProjectName(ChangeEventArgs e)
+    {
+        Project.Name = e.Value.ToString();
+        SelectObserver.Update();
+    }
+
+    private async Task ChangeProjectAssignee(ChangeEventArgs e)
+    {
+        Project.UnitId = new Guid(e.Value.ToString());
+        await UpdateProject();
+        SelectObserver.Update();
+    }
+    #endregion
+
+    #region Edit Tasks
+
+    private async Task AddTask()
+    {
+        await BacklogService.CreateTaskInProject(Project, "Новая задача", UserUnitService.GetOrganizationUnit(Project.UnitId));
+    }
+
+    private async Task DeleteTask(ProjectTask projectTask)
+    {
+        await BacklogService.DeleteTaskFromProject(Project, projectTask);
+    }
+
+    private async Task UpdateTaskFlag(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.Done = changeEventArgs.Value.ToString() == "True";
+        await UpdateProject();
+    }
+
+    private async Task UpdateTaskName(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.Name = changeEventArgs.Value.ToString();
+        await UpdateProject();
+    }
+
+    private async Task UpdateTaskAssignee(ProjectTask task, ChangeEventArgs changeEventArgs)
+    {
+        task.UnitId = new Guid(changeEventArgs.Value.ToString());
+        await UpdateProject();
+    }
+
+    #endregion
+
+    #region Edit goals
+
+    private async Task<IEnumerable<(Guid id, string name, bool actual)>> GetGoalsCheckList()
+    {
+        if (Project == null)
+            return new (Guid id, string name, bool actual)[] { };
+
+        var goals = await GoalsService.GetGoals();
+        var currentGoals = Project.Goals;
+
+        return goals
+            .Select(goal => (id:goal.Id, name:goal.Name, actual:currentGoals.Any(x => x.Id == goal.Id)))
+            .Union(
+                currentGoals
+                    .Where(x => goals.All(g => g.Id != x.Id))
+                    .Select(x => (id:x.Id, name:x.Name, actual:true))).ToArray();
+    }
+
+    private async Task ToggleGoal(Guid id, ChangeEventArgs changeEventArgs)
+    {
+        if (changeEventArgs.Value.ToString() == "True")
+        {
+            var goal = _goalList.SingleOrDefault(x => x.id == id);
+            await BacklogService.AddProjectGoal(Project, goal.id, goal.name);
+        }
+        else
+        {
+            await BacklogService.DeleteProjectGoal(Project,
+                Project.Goals.Single(x => x.Id == id));
+        }
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+}

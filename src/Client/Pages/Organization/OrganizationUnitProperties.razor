@@ -1,0 +1,137 @@
+﻿@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+
+@inject UserUnitService UserUnitService
+
+@if (Unit != null)
+{
+    <div class="d-flex w-100 justify-content-between mb-3 pt-2">
+        <button class="btn btn-sm btn-success" @onclick="AddChild"><i class="oi oi-people" />&nbsp;Новое</button>
+        <button class="btn btn-sm btn-danger" @onclick="Delete"><i class="oi oi-x" />&nbsp;Удалить</button>
+    </div>
+
+    <EditForm Model="@Unit">
+        <div class="form-group">
+            <label for="unitName">Название подразделения</label>
+            <input id="unitName" class="form-control" value="@Unit.Name"
+                   @oninput="BindName" @onchange="UpdateData" />
+        </div>
+
+        <div class="form-group">
+            <button id="projectPurpose" class="btn btn-sm btn-outline-info"
+                    data-toggle="modal" data-target="#accountModal">
+                Настройка учетной записи
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label for="unitBacklogs">Беклоги</label>
+            <div class="list-group">
+                @foreach (var backlog in Unit.Backlogs)
+                {
+                    <div class="form-row">
+                        <div class="form-group col-11">
+                            <input class="form-control form-control-sm" type="text"
+                                   value="@backlog.Name" @onchange="@(async (e) => await UpdateBacklogName(backlog, e))" />
+                        </div>
+                        <div class="form-group col-1 text-right">
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="()=>DeleteBacklog(backlog)">
+                                <i class="oi oi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button id="addBacklog" class="btn btn-sm btn-outline-success" @onclick="AddBacklog"> Добавить беклог </button>
+        </div>
+
+    </EditForm>
+
+    <!-- Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Настройка учетной записи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="login">Логин</label>
+                        <input id="login" class="form-control" @bind="Unit.UserName" @bind:event="oninput"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Пароль</label>
+                        <input id="password" class="form-control" type="password" @bind="_password" @bind:event="oninput" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="SetAccount">Задать</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public OrganizationUnit Unit { get; set; }
+
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+
+    private string _password;
+
+    private async Task AddChild()
+    {
+        var child = await UserUnitService.AddChildOrganizationUnit(Unit, "Новое подразделение");
+        await SelectObserver.Select(child);
+    }
+
+    private async Task Delete()
+    {
+        var parent = await UserUnitService.DeleteOrganizationUnit(Unit);
+        await SelectObserver.Select(parent);
+    }
+
+    private void BindName(ChangeEventArgs e)
+    {
+        Unit.Name = e.Value.ToString();
+        SelectObserver.Update();
+    }
+
+    private async Task UpdateData()
+    {
+        await UserUnitService.UpdateOrganizationUnit(Unit);
+    }
+
+    private async Task AddBacklog()
+    {
+        await UserUnitService.CreateBacklog(Unit, "Новый беклог");
+        await SelectObserver.Select(UserUnitService.GetOrganizationUnit(Unit.Id));
+    }
+
+    private async Task DeleteBacklog(BacklogDefinition backlog)
+    {
+        await UserUnitService.DeleteBacklog(backlog);
+        await SelectObserver.Select(UserUnitService.GetOrganizationUnit(Unit.Id));
+    }
+
+
+    private async Task UpdateBacklogName(BacklogDefinition backlog, ChangeEventArgs changeEventArgs)
+    {
+        backlog.Name = changeEventArgs.Value.ToString();
+        await UserUnitService.UpdateBacklog(backlog);
+    }
+
+    private async Task SetAccount()
+    {
+        await UserUnitService.SetAccount(Unit, _password);
+    }
+
+}

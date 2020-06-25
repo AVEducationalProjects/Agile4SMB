@@ -1,13 +1,11 @@
 using System;
 using System.Net.Http;
-using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Agile4SMB.Client.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Agile4SMB.Client
 {
@@ -18,8 +16,20 @@ namespace Agile4SMB.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddTransient(sp =>
+            {
+                var client = new HttpClient {BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)};
+                if(!string.IsNullOrEmpty(AuthStateProvider.AuthToken))
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthStateProvider.AuthToken);
+                return client;
+
+            });
+            builder.Services.AddScoped<UserUnitService>();
+            builder.Services.AddScoped<BacklogService>();
+            builder.Services.AddScoped<GoalsService>();
+
+            builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
+            builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();
         }

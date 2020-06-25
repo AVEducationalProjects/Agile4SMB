@@ -1,0 +1,33 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@inherits BacklogBase
+
+@attribute [Authorize]
+@page "/"
+
+<div class="row">
+    <div class="col-5">
+
+        <BacklogsDropdown Unit="@CurrentUnit"
+                          SelectObserver="@this" />
+
+        <div class="d-flex w-100 justify-content-between mb-2">
+            <p class="h5">Проекты</p>
+            <button class="btn btn-sm btn-success" @onclick="@AddProject"><i class="oi oi-project" />&nbsp;Новый</button>
+        </div>
+
+        <BacklogItemList Backlog="@CurrentBacklog" SelectObserver="@this" />
+
+    </div>
+
+    <div class="col-7">
+        <div class="sticky-top">
+            <ProjectProperties Project="@CurrentProject" SelectObserver="@this" />
+        </div>
+    </div>
+</div>
+
+@code{
+
+
+
+}

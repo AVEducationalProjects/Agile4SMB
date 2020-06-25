@@ -1,0 +1,33 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+
+<div class="pl-4 list-group-item list-group-item-action 
+     @(Unit==SelectObserver.Item?"active":"")"
+     @onclick="@(e => SelectUnit(Unit))"
+     @onclick:stopPropagation="@true">
+    
+    <div class="d-flex w-100 justify-content-between mb-2 selectable">
+        <p class="h6">@Unit.Name</p>
+    </div>
+
+
+    @foreach (var child in Unit.Children)
+    {
+        <OrganizationUnitTree Unit="@child" SelectObserver="@SelectObserver" />
+    }
+
+</div>
+
+@code {
+
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+    [Parameter] public OrganizationUnit Unit { get; set; }
+    
+    private void SelectUnit(OrganizationUnit unit)
+    {
+        SelectObserver.Select(unit);
+    }
+
+}

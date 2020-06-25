@@ -1,0 +1,34 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
+
+@inject UserUnitService UserUnitService
+@inject BacklogService BacklogService
+
+
+@if (Backlog != null && Backlog.Projects != null)
+{
+    <div class="list-group">
+
+        @foreach (var project in Backlog.Projects)
+        {
+            <div class="list-group-item selectable list-group-item-action @(project == SelectObserver.Item ? "active" : "")"
+                 @onclick="@(e => SelectObserver.Select(project))">
+                <div class="d-flex w-100 justify-content-between">
+                    <small>@UserUnitService.GetOrganizationUnit(project.UnitId)?.Name</small>
+                    <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+                </div>
+                <p class="mb-1 pt-2">@project.Name</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    [Parameter] public Agile4SMB.Shared.Domain.Backlog Backlog { get; set; }
+
+    [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
+}

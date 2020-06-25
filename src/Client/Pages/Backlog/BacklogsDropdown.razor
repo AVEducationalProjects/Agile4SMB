@@ -1,0 +1,52 @@
+﻿@using Agile4SMB.Shared
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
+
+@if (Unit != null)
+{
+
+    <div class="form-group">
+        <select class="form-control" @bind="SelectedBacklogId">
+            @foreach (var (id, name, unit) in _backlogList)
+            {
+                <option value=@id>@name (@unit)</option>
+            }
+        </select>
+    </div>
+}
+
+@code {
+
+    [Parameter] public OrganizationUnit Unit { get; set; }
+
+    [Parameter] public ISelectObserver<BacklogDefinition> SelectObserver { get; set; }
+
+
+    private Guid _selectedBacklogId;
+    private IEnumerable<(Guid id, string name, string unit)> _backlogList;
+
+    private Guid SelectedBacklogId
+    {
+        get => _selectedBacklogId;
+        set
+        {
+            _selectedBacklogId = value;
+
+            var backlog = Unit.GetAvailableBacklogs().Single(x => x.backlog.Id == _selectedBacklogId).backlog;
+            SelectObserver.Select(backlog);
+        }
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        _backlogList = Unit?
+            .GetAvailableBacklogs()?
+            .Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
+
+        _selectedBacklogId = SelectObserver.Item?.Id ?? (_backlogList?.FirstOrDefault().id ?? new Guid());
+
+        return base.OnParametersSetAsync();
+    }
+
+}

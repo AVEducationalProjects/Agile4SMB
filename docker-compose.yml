@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+  agile4smb:
+    image: avmorozov/agile4smb:proto
+    restart: always
+    ports:
+      - 5010:80
+    depends_on:
+      - "mongo"
+    environment:
+      - Mongo__Server=mongodb://mongo
+      
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - agil4smb_mongodb:/data/db
+
+volumes:
+  agil4smb_mongodb:
+    driver: local

@@ -1,0 +1,57 @@
+﻿@page "/login"
+@using Agile4SMB.Client.Services
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="container">
+    <div class="row my-5">
+        <div class="col-6 offset-3">
+            <h1 class="text-center mb-5">Войти в Agile4SMB</h1>
+
+            <div class="form-group">
+                <div class="form-group">
+                    <label for="login">Имя пользователя</label>
+                    <input type="text" class="form-control" id="login" aria-describedby="emailHelp" @bind="_username">
+                </div>
+                <div class="form-group mb-5">
+                    <label for="password">Пароль</label>
+                    <input type="password" class="form-control" id="password" @bind="_password">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" @onclick="SignIn">Войти</button>
+
+            @if (_loginError)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" id="loginError">
+                    <strong>Ошибка входа!</strong> Проверьте корректность ввод имени пользователя и пароля.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private bool _loginError;
+    private string _username;
+    private string _password;
+
+
+    private async Task SignIn()
+    {
+        if (await ((AuthStateProvider)AuthenticationStateProvider).Authenticate(_username, _password))
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        _password = "";
+        _loginError = true;
+    }
+
+}

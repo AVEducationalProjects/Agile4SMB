@@ -1,0 +1,26 @@
+﻿@inherits OrganizationBase
+@attribute [Authorize]
+
+@page "/organization"
+@using Microsoft.AspNetCore.Authorization
+
+
+@if (UserUnit != null)
+{
+    <div class="row">
+        <div class="col-5">
+            <OrganizationUnitTree Unit="@UserUnit" SelectObserver="@this" />
+        </div>
+
+        <div class="col-7">
+            <div class="sticky-top">
+                <OrganizationUnitProperties Unit="@SelectedUnit" SelectObserver="@this" />
+            </div>
+        </div>
+
+    </div>
+}
+
+@code{
+
+}
