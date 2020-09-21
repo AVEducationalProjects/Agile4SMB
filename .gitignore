@@ -7,3 +7,7 @@
 **/bin
 **/obj
 src/Client/wwwroot/vendor
+
+
+# Rider folder exclude
+.idea
