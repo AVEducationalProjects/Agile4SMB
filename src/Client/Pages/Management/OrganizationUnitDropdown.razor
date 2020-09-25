@@ -1,0 +1,47 @@
+﻿@using Agile4SMB.Shared.Domain
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Client.Services
+@inject UserUnitService UserUnitService;
+
+@if (Unit != null)
+{
+    
+    <div class="form-group">
+        <select class="form-control" @bind="SelectedUnitId">
+            @foreach (var unit in _organizationUnitList)
+            {
+                <option value=@unit.id>@unit.name</option>
+            }
+
+        </select>
+    </div>
+}
+
+@code {
+    [Parameter] public OrganizationUnit Unit { get; set; }
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+    
+    private Guid _selectedUnitId;
+    private IEnumerable<(Guid id, string name)> _organizationUnitList;
+    
+    private Guid SelectedUnitId
+    {
+        get => _selectedUnitId;
+        set
+        {
+            _selectedUnitId = value;
+            var unit = Unit.Find(_selectedUnitId);
+            SelectObserver.Select(unit);
+        }
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        _organizationUnitList = UserUnitService
+            .GetOrganizationUnits()
+            .Select(x => (id: x.Id, name: x.Name));
+        
+        _selectedUnitId = SelectObserver.Item?.Id ?? (_organizationUnitList?.FirstOrDefault().id ?? new Guid());
+        return base.OnParametersSetAsync();
+    }
+}

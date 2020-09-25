@@ -1,5 +1,12 @@
-﻿@page "/management"
+﻿@inherits ManagementBase
+@page "/management"
 
+@if (SelectedUnit != null)
+{
+    <h1>@SelectedUnit.Name</h1>
+}
+
+<OrganizationUnitDropdown Unit="@UserUnit" SelectObserver="@this"></OrganizationUnitDropdown>
 
 
 @code {
