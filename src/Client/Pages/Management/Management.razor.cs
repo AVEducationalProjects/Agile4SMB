@@ -17,7 +17,7 @@ namespace Agile4SMB.Client.Pages.Management
         /// <summary>
         /// current logged user
         /// </summary>
-        public OrganizationUnit UserUnit { get; set; }
+        protected OrganizationUnit UserUnit { get; set; }
         
         protected override async Task OnInitializedAsync()
         {
@@ -28,6 +28,7 @@ namespace Agile4SMB.Client.Pages.Management
         protected override async Task OnParametersSetAsync()
         {
             UserUnit = await UserUnitService.GetCurrentUnit();
+            Update();
         }
 
         public OrganizationUnit Item => SelectedUnit;

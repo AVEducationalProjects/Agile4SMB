@@ -1,14 +1,12 @@
 ﻿@inherits ManagementBase
 @page "/management"
 
-@if (SelectedUnit != null)
-{
-    <h1>@SelectedUnit.Name</h1>
-}
-
-<OrganizationUnitDropdown Unit="@UserUnit" SelectObserver="@this"></OrganizationUnitDropdown>
-
-
+<div class="col-5">
+    <div class="d-flex w-100 justify-content-between mb-2">
+        <OrganizationUnitDropdown Unit="@UserUnit" SelectObserver="@this"></OrganizationUnitDropdown>
+        <ProjectsList SelectObserver="@this"></ProjectsList>
+    </div>
+</div>
 @code {
     
 }

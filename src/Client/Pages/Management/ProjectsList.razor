@@ -1,0 +1,26 @@
+﻿@using Agile4SMB.Shared.Domain
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@inject UserUnitService UserUnitService
+
+<h3>@UserUnitService.GetOrganizationUnit(_selectedUnit).Name</h3>
+
+@code {
+    // TODO: Добавить список проектов выбранного юнита
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+    private Guid _selectedUnit;
+
+    // private OrganizationUnit _selectedUnit;
+    // // private IEnumerable<(string name, Guid id)> _projects;
+    private IEnumerable<Project> _projects;
+
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _selectedUnit = SelectObserver.Item?.Id ??
+        UserUnitService.GetCurrentUnit().Result.Id;
+        _projects = await UserUnitService.GetUnitProjects(_selectedUnit);
+        await base.OnParametersSetAsync();
+    }
+
+}

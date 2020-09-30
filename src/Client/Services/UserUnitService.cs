@@ -55,6 +55,12 @@ namespace Agile4SMB.Client.Services
             return _currentUnit.Find(unitId);
         }
 
+        public async  Task<IEnumerable<Project>> GetUnitProjects(Guid unitId)
+        {
+            return await _http
+                .GetFromJsonAsync<IEnumerable<Project>>($"api/Projects?unitId={unitId}");
+        }
+        
         public async Task<OrganizationUnit> AddChildOrganizationUnit(OrganizationUnit unit, string name)
         {
             var result = await _http.PostAsJsonAsync("api/Organization",
