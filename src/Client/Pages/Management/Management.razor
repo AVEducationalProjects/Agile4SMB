@@ -4,12 +4,12 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <OrganizationUnitDropdown Unit="@UserUnit" SelectObserver="@this"></OrganizationUnitDropdown>
+            <OrganizationUnitDropdown CurrentUnit="@CurrentUnit" SelectObserver="@this"></OrganizationUnitDropdown>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <ProjectsList UnitSelectObserver="@this" ProjectSelectObserver="@this"></ProjectsList>
+            <ProjectsList SelectedUnit="@SelectedUnit" ProjectSelectObserver="@this"></ProjectsList>
         </div>
     </div>
 </div>

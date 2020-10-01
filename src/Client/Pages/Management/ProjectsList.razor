@@ -3,38 +3,32 @@
 @using Agile4SMB.Client.Utils
 @inject UserUnitService UserUnitService
 
-@if (_projects != null)
+@if (SelectedUnit != null && _projects != null)
 {
-    @foreach (var project in _projects)
-    {
-        <div class="list-group-item selectable list-group-item-action @(project == ProjectSelectObserver.Item ? "active" : "")"
-             @onclick="@(e => ProjectSelectObserver.Select(project))">
-            <div class="d-flex w-100 justify-content-between">
-                <small>@UserUnitService.GetOrganizationUnit(project.UnitId)?.Name</small>
-                <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+    <div class="list-group">
+        @foreach (var project in _projects)
+        {
+            <div class="list-group-item selectable list-group-item-action @(project == ProjectSelectObserver.Item ? "active" : "")"
+                 @onclick="@(e => ProjectSelectObserver.Select(project))">
+                <div class="d-flex w-100 justify-content-between">
+                    <small>@UserUnitService.GetOrganizationUnit(project.UnitId)?.Name</small>
+                    <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+                </div>
+                <p class="mb-1 pt-2">@project.Id</p>
             </div>
-            <p class="mb-1 pt-2">@project.Name</p>
-        </div>
-    }
+        }
+    </div>
 }
 
 @code {
-    // TODO: Добавить список проектов выбранного юнита
-    [Parameter] public ISelectObserver<OrganizationUnit> UnitSelectObserver { get; set; }
+    [Parameter] public OrganizationUnit SelectedUnit { get; set; }
     [Parameter] public ISelectObserver<Project> ProjectSelectObserver { get; set; }
-    private Guid _selectedUnit;
 
-    // private OrganizationUnit _selectedUnit;
-    // // private IEnumerable<(string name, Guid id)> _projects;
     private IEnumerable<Project> _projects;
 
-    
     protected override async Task OnParametersSetAsync()
     {
-        _selectedUnit = UnitSelectObserver.Item?.Id ??
-        UserUnitService.GetCurrentUnit().Result.Id;
-        _projects = await UserUnitService.GetUnitProjects(_selectedUnit);
-        await base.OnParametersSetAsync();
+        var unit = SelectedUnit ?? await UserUnitService.GetCurrentUnit();
+        _projects = await UserUnitService.GetUnitProjects(unit.Id);
     }
-
 }

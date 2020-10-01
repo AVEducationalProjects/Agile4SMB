@@ -3,7 +3,7 @@
 @using Agile4SMB.Client.Services
 @inject UserUnitService UserUnitService;
 
-@if (Unit != null)
+@if (_organizationUnitList != null)
 {
     <div class="form-group">
         <select class="form-control" @bind="SelectedUnitId">
@@ -16,8 +16,9 @@
 }
 
 @code {
-    [Parameter] public OrganizationUnit Unit { get; set; }
+    [Parameter] public OrganizationUnit CurrentUnit { get; set; }
     [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+
     
     private Guid _selectedUnitId;
     private IEnumerable<(Guid id, string name)> _organizationUnitList;
@@ -28,18 +29,15 @@
         set
         {
             _selectedUnitId = value;
-            var unit = Unit.Find(_selectedUnitId);
+            var unit = CurrentUnit.Find(_selectedUnitId);
             SelectObserver.Select(unit);
         }
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override Task OnInitializedAsync()
     {
-        _organizationUnitList = UserUnitService
-            .GetOrganizationUnits()
-            .Select(x => (id: x.Id, name: x.Name));
-        
-        _selectedUnitId = SelectObserver.Item?.Id ?? (_organizationUnitList?.FirstOrDefault().id ?? new Guid());
-        return base.OnParametersSetAsync();
+        _organizationUnitList = UserUnitService.GetOrganizationUnits().Select(x=> (id: x.Id, name: x.Name));
+        _selectedUnitId = SelectObserver.Item?.Id ?? _organizationUnitList.FirstOrDefault().id;
+        return base.OnInitializedAsync();
     }
-}
+}    

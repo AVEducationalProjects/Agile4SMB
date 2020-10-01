@@ -18,25 +18,25 @@ namespace Agile4SMB.Client.Pages.Management
         /// <summary>
         /// current logged user
         /// </summary>
-        protected OrganizationUnit UserUnit { get; set; }
+        protected OrganizationUnit CurrentUnit { get; set; }
         
         protected override async Task OnInitializedAsync()
         {
-            UserUnit = await UserUnitService.GetCurrentUnit();
+            CurrentUnit = await UserUnitService.GetCurrentUnit();
             Update();
         }
 
-        protected override async Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
-            UserUnit = await UserUnitService.GetCurrentUnit();
             Update();
+            base.OnParametersSet();
         }
 
-        public OrganizationUnit Item => SelectedUnit;
+
+        OrganizationUnit ISelectObserver<OrganizationUnit>.Item => SelectedUnit;
 
         public async Task Select(OrganizationUnit item)
         {
-            UserUnit = await UserUnitService.GetCurrentUnit();
             SelectedUnit = item;
             Update();
         }
@@ -47,7 +47,7 @@ namespace Agile4SMB.Client.Pages.Management
         {
             SelectedProject = item;
             Update();
-            return null;
+            return Task.CompletedTask;
         }
 
         public void Update()
