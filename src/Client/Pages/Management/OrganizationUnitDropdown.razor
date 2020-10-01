@@ -37,7 +37,7 @@
     protected override Task OnInitializedAsync()
     {
         _organizationUnitList = UserUnitService.GetOrganizationUnits().Select(x=> (id: x.Id, name: x.Name));
-        _selectedUnitId = SelectObserver.Item?.Id ?? _organizationUnitList.FirstOrDefault().id;
+        SelectedUnitId = SelectObserver.Item?.Id ?? _organizationUnitList.FirstOrDefault().id;
         return base.OnInitializedAsync();
     }
 }    

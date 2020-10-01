@@ -2,6 +2,7 @@
 @using Agile4SMB.Client.Services
 @using Agile4SMB.Client.Utils
 @inject UserUnitService UserUnitService
+@inject BacklogService BacklogService;
 
 @if (SelectedUnit != null && _projects != null)
 {
@@ -11,10 +12,10 @@
             <div class="list-group-item selectable list-group-item-action @(project == ProjectSelectObserver.Item ? "active" : "")"
                  @onclick="@(e => ProjectSelectObserver.Select(project))">
                 <div class="d-flex w-100 justify-content-between">
-                    <small>@UserUnitService.GetOrganizationUnit(project.UnitId)?.Name</small>
+                    <small>@GetBacklogInfo(project)</small>
                     <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
                 </div>
-                <p class="mb-1 pt-2">@project.Id</p>
+                <p class="mb-1 pt-2">@project.Name</p>
             </div>
         }
     </div>
@@ -22,13 +23,25 @@
 
 @code {
     [Parameter] public OrganizationUnit SelectedUnit { get; set; }
+    [Parameter] public OrganizationUnit CurrentUnit { get; set; }
     [Parameter] public ISelectObserver<Project> ProjectSelectObserver { get; set; }
 
+
+    private string GetBacklogInfo(Project project)
+    {
+        var backlog = _backlogList.ToList().Find(x => x.id == project.BacklogId);
+        return $"{backlog.unit} ({backlog.name})";
+    }
     private IEnumerable<Project> _projects;
+    private IEnumerable<(Guid id, string name, string unit)> _backlogList;
 
     protected override async Task OnParametersSetAsync()
     {
         var unit = SelectedUnit ?? await UserUnitService.GetCurrentUnit();
         _projects = await UserUnitService.GetUnitProjects(unit.Id);
+        _backlogList = CurrentUnit
+            .GetAvailableBacklogs()?
+            .Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));   
+
     }
 }

@@ -35,10 +35,11 @@ namespace Agile4SMB.Client.Pages.Management
 
         OrganizationUnit ISelectObserver<OrganizationUnit>.Item => SelectedUnit;
 
-        public async Task Select(OrganizationUnit item)
+        public Task Select(OrganizationUnit item)
         {
             SelectedUnit = item;
             Update();
+            return Task.CompletedTask;
         }
 
         Project ISelectObserver<Project>.Item => SelectedProject;
