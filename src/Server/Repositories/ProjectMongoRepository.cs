@@ -30,7 +30,7 @@ namespace Agile4SMB.Server.Repositories
 
         public IEnumerable<Project> GetByUnitId(Guid unitId)
         {
-            var data = _projectCollection.FindSync(x => true).ToEnumerable<Project>();
+            var data = _projectCollection.FindSync(x => x.UnitId == unitId).ToEnumerable<Project>();
             return data;  
         }
     }

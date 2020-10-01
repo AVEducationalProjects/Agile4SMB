@@ -4,6 +4,13 @@
 @inject UserUnitService UserUnitService
 
 <h3>@UserUnitService.GetOrganizationUnit(_selectedUnit).Name</h3>
+@if (_projects != null)
+{
+    @foreach (var project in _projects)
+    {
+        <h3>@project.Name</h3>
+    }
+}
 
 @code {
     // TODO: Добавить список проектов выбранного юнита
