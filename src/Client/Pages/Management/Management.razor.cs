@@ -9,11 +9,12 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Agile4SMB.Client.Pages.Management
 {
-    public class ManagementBase : ComponentBase, ISelectObserver<OrganizationUnit>
+    public class ManagementBase : ComponentBase, ISelectObserver<OrganizationUnit>, ISelectObserver<Project>
     {
         [Inject] public UserUnitService UserUnitService { get; set; }
         
         protected OrganizationUnit SelectedUnit { get; set; }
+        protected Project SelectedProject { get; set; }
         /// <summary>
         /// current logged user
         /// </summary>
@@ -40,10 +41,20 @@ namespace Agile4SMB.Client.Pages.Management
             Update();
         }
 
+        Project ISelectObserver<Project>.Item => SelectedProject;
+
+        public Task Select(Project item)
+        {
+            SelectedProject = item;
+            Update();
+            return null;
+        }
+
         public void Update()
         {
             StateHasChanged();
         }
+        
     }
 
 }

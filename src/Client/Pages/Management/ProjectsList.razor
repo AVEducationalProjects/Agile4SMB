@@ -3,18 +3,25 @@
 @using Agile4SMB.Client.Utils
 @inject UserUnitService UserUnitService
 
-<h3>@UserUnitService.GetOrganizationUnit(_selectedUnit).Name</h3>
 @if (_projects != null)
 {
     @foreach (var project in _projects)
     {
-        <h3>@project.Name</h3>
+        <div class="list-group-item selectable list-group-item-action @(project == ProjectSelectObserver.Item ? "active" : "")"
+             @onclick="@(e => ProjectSelectObserver.Select(project))">
+            <div class="d-flex w-100 justify-content-between">
+                <small>@UserUnitService.GetOrganizationUnit(project.UnitId)?.Name</small>
+                <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+            </div>
+            <p class="mb-1 pt-2">@project.Name</p>
+        </div>
     }
 }
 
 @code {
     // TODO: Добавить список проектов выбранного юнита
-    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+    [Parameter] public ISelectObserver<OrganizationUnit> UnitSelectObserver { get; set; }
+    [Parameter] public ISelectObserver<Project> ProjectSelectObserver { get; set; }
     private Guid _selectedUnit;
 
     // private OrganizationUnit _selectedUnit;
@@ -24,7 +31,7 @@
     
     protected override async Task OnParametersSetAsync()
     {
-        _selectedUnit = SelectObserver.Item?.Id ??
+        _selectedUnit = UnitSelectObserver.Item?.Id ??
         UserUnitService.GetCurrentUnit().Result.Id;
         _projects = await UserUnitService.GetUnitProjects(_selectedUnit);
         await base.OnParametersSetAsync();
