@@ -7,9 +7,9 @@
 {
     <div class="form-group">
         <select class="form-control" @bind="SelectedUnitId">
-            @foreach (var unit in _organizationUnitList)
+            @foreach (var (id, name) in _organizationUnitList)
             {
-                <option value=@unit.id>@unit.name</option>
+                <option value=@id>@name</option>
             }
         </select>
     </div>
@@ -29,7 +29,7 @@
         set
         {
             _selectedUnitId = value;
-            var unit = CurrentUnit.Find(_selectedUnitId);
+            var unit = CurrentUnit.Find(value);
             SelectObserver.Select(unit);
         }
     }
@@ -37,7 +37,7 @@
     protected override Task OnInitializedAsync()
     {
         _organizationUnitList = UserUnitService.GetOrganizationUnits().Select(x=> (id: x.Id, name: x.Name));
-        SelectedUnitId = SelectObserver.Item?.Id ?? _organizationUnitList.FirstOrDefault().id;
+        SelectedUnitId = _organizationUnitList.FirstOrDefault().id;
         return base.OnInitializedAsync();
     }
 }    

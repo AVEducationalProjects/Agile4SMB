@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Agile4SMB.Client.Services;
 using Agile4SMB.Client.Utils;
@@ -43,7 +45,7 @@ namespace Agile4SMB.Client.Pages.Management
         }
 
         Project ISelectObserver<Project>.Item => SelectedProject;
-
+        
         public Task Select(Project item)
         {
             SelectedProject = item;

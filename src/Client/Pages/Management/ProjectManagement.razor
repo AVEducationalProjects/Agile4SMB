@@ -69,28 +69,31 @@
 
     private string NewBacklogName { get; set; }
 
-
+    
     protected async Task AddBacklog()
     {
         var copiedBacklog = await UserUnitService.CreateBacklog(SelectedUnit, SelectedProject.Name);
         var projectInBacklog = await BacklogService.
             CreateProjectInBacklog(SelectedProject.Name, copiedBacklog, SelectedUnit);
-
         var project = await CopyProjectData(projectInBacklog.Item2);
+        
         await BacklogService.UpdateProject(project);
+        await SelectObserver.Select(project);
+        StateHasChanged();
         
         async Task<Project>  CopyProjectData(Project project)
         {
             foreach (var task in SelectedProject.Tasks)
-            {
                 await BacklogService.CreateTaskInProject(project, task.Name, UserUnitService.GetOrganizationUnit(task.UnitId));
-            }
+
             foreach (var goal in SelectedProject.Goals)
-            {
                 await BacklogService.AddProjectGoal(project, goal.Id, goal.Name);
-            }
+            
+            var tasksToCopy = SelectedProject.Tasks.ToArray();
+            for (var i = 0 ; i < project.Tasks.Count();i++)
+                project.Tasks.ToArray()[i].Done = tasksToCopy[i].Done;
+            
             return project;
         }
-        StateHasChanged();
     }
 }
