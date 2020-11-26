@@ -1,0 +1,49 @@
+﻿@using Agile4SMB.Shared.Domain
+@using Agile4SMB.Client.Services
+@using Agile4SMB.Client.Utils
+@inject UserUnitService UserUnitService
+@inject BacklogService BacklogService;
+
+@if (SelectedUnit != null)
+{
+    <div class="list-group">
+        @foreach (var project in _projects)
+        {
+            <div @onclick="@(e => { ProjectSelectObserver.Select(project); })"
+                  class="list-group-item selectable list-group-item-action @(project.Id == ProjectSelectObserver.Item?.Id ? "active" : "")">
+
+                <div class="d-flex w-100 justify-content-between">
+                    <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
+                </div>
+                <p class="mb-1 pt-2">@project.Name</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+
+    [Parameter] public OrganizationUnit SelectedUnit { get; set; }
+
+    [Parameter] public ISelectObserver<Project> ProjectSelectObserver { get; set; }
+
+    [Parameter] public OrganizationUnit CurrentUser { get; set; }
+
+
+    private IEnumerable<Project> _projects;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _projects = await UserUnitService.GetUnitProjects(CurrentUser!.Id);
+
+        var selection = new List<Project>();
+        foreach (var project in _projects)
+        {
+            var owner = await BacklogService.GetOwner(project.BacklogId);
+            if (owner.Id == SelectedUnit?.Id) {selection.Add(project);}
+        }
+        _projects = selection;
+    }
+
+}

@@ -1,0 +1,63 @@
+﻿@using Agile4SMB.Shared.Domain
+@using Agile4SMB.Client.Utils
+@using Agile4SMB.Client.Services    
+@inject UserUnitService UserUnitService;
+@inject BacklogService BacklogService;
+
+@if (_delegators != null)
+{
+     <div class="form-group">
+         <select class="form-control" @bind="SelectedUnitId">
+             @foreach (var (id, name) in _delegators)
+             {
+                 <option value=@id>@name</option>
+             }
+         </select>
+     </div>
+}
+
+@code {
+    [Parameter] public ISelectObserver<OrganizationUnit> SelectObserver { get; set; }
+    [Parameter] public OrganizationUnit CurrentUser { get; set; }
+
+    private List<OrganizationUnit> Delegators { get; set; }
+    private IEnumerable<(Guid id, string name)> _delegators;
+    private Guid _selectedUnitId;
+
+    private Guid SelectedUnitId
+    {
+        get => _selectedUnitId;
+        set
+        {
+            _selectedUnitId = value;
+            var unit = Delegators.FirstOrDefault(x => x.Id == _selectedUnitId);
+            SelectObserver.Select(unit);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Delegators = new List<OrganizationUnit>();
+        
+        
+        var projects = await UserUnitService.GetUnitProjects(CurrentUser.Id);
+        foreach (var project in projects)
+        {
+            var owner = await BacklogService.GetOwner(project.BacklogId);
+            var found = Delegators.FirstOrDefault(x => owner.Id == x.Id);
+            if (found == null)
+            {
+                Delegators.Add(owner);
+            }
+        }
+        _delegators = Delegators.Select(x => (id: x.Id, name: x.Name));
+        SelectedUnitId = Delegators.FirstOrDefault()?.Id ?? new Guid();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _selectedUnitId = SelectObserver.Item?.Id ?? (Delegators.FirstOrDefault()?.Id ?? new Guid());
+        await base.OnParametersSetAsync();
+    }
+}    

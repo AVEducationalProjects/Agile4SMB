@@ -1,0 +1,17 @@
+﻿@inherits ManagementBase
+@page "/management"
+
+<div class="row">
+    <div class="col-5">
+        <OrganizationUnitDropdown SelectObserver="@this" CurrentUser="@CurrentUser"></OrganizationUnitDropdown>
+        <p class="h5">Порученные проекты:</p>
+        <ProjectsList SelectedUnit="@SelectedUnit" ProjectSelectObserver="@this" CurrentUser="@CurrentUser"></ProjectsList>
+    </div>
+    
+    <div class="col-7">
+        <ProjectManagement CurrentUser="@CurrentUser" SelectedProject="@SelectedProject"></ProjectManagement>
+    </div>
+</div>
+@code {
+    
+}    

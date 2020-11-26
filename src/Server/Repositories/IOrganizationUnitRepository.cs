@@ -9,6 +9,7 @@ namespace Agile4SMB.Server.Repositories
     {
         OrganizationUnit Get(string username);
         OrganizationUnit Get(Guid id);
+        OrganizationUnit GetOwner(Guid backlogId);
         void AddToParent(OrganizationUnit parent, OrganizationUnit child);
         void Delete(OrganizationUnit unit);
         void Update(OrganizationUnit unit);

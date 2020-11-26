@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Agile4SMB.Server.Repositories;
 using Agile4SMB.Shared.Domain;
 using Agile4SMB.Shared.DTO;
@@ -13,12 +15,22 @@ namespace Agile4SMB.Server.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IBacklogRepository _backlogRepository;
+        private readonly IProjectRepository _projectRepository;
 
-        public ProjectsController(IBacklogRepository backlogRepository)
+        public ProjectsController(IBacklogRepository backlogRepository, IProjectRepository projectRepository)
         {
             _backlogRepository = backlogRepository;
+            _projectRepository = projectRepository;
         }
 
+        [HttpGet(Name = "Projects")]
+        public ActionResult<IEnumerable<Project>> Get([FromQuery]Guid? unitId)
+        {
+            if (!unitId.HasValue)
+                return NotFound();
+            return Ok(_projectRepository.GetByUnitId(unitId.Value));
+        }
+        
         [HttpPost]
         public ActionResult Post(CreateProjectDTO param)
         {

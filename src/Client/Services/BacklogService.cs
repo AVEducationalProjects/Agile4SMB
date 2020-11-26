@@ -24,6 +24,10 @@ namespace Agile4SMB.Client.Services
             return await _http.GetFromJsonAsync<Backlog>($"api/Backlogs?id={backlogDefinition.Id}");
         }
 
+        public async Task<OrganizationUnit> GetOwner(Guid backlogId)
+        {
+            return await _http.GetFromJsonAsync<OrganizationUnit>($"api/Organization/{backlogId}");
+        }
         public async Task<(Backlog, Project)> CreateProjectInBacklog(string name, BacklogDefinition backlogDefinition, OrganizationUnit assignee)
         {
             var result = await _http.PostAsJsonAsync($"api/Projects",
