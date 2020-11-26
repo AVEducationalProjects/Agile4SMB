@@ -3,15 +3,15 @@
 
 <div class="row">
     <div class="col-5">
-        <OrganizationUnitDropdown CurrentUnit="@CurrentUnit" SelectObserver="@this"></OrganizationUnitDropdown>
+        <OrganizationUnitDropdown SelectObserver="@this" CurrentUser="@CurrentUser"></OrganizationUnitDropdown>
         <p class="h5">Порученные проекты:</p>
-        <ProjectsList SelectedUnit="@SelectedUnit" ProjectSelectObserver="@this"></ProjectsList>
+        <ProjectsList SelectedUnit="@SelectedUnit" ProjectSelectObserver="@this" CurrentUser="@CurrentUser"></ProjectsList>
     </div>
     
     <div class="col-7">
-        <ProjectManagement SelectedUnit="@SelectedUnit" SelectedProject="@SelectedProject" SelectObserver="@this"></ProjectManagement>
+        <ProjectManagement CurrentUser="@CurrentUser" SelectedProject="@SelectedProject"></ProjectManagement>
     </div>
 </div>
 @code {
     
-}
+}    

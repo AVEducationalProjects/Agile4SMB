@@ -3,6 +3,8 @@
 @using Agile4SMB.Client.Services
 @inject UserUnitService UserUnitService
 @inject BacklogService BacklogService
+@inject IJSRuntime JsRuntime;
+
 
 @if (SelectedProject != null)
 {
@@ -13,49 +15,82 @@
                    readonly class="form-control"
                    value="@SelectedProject.Name">
         </div>
-            
+
         <div class="form-group">
             <label>Соответствие целям</label>
             <ul>
                 @foreach (var goal in SelectedProject.Goals)
                 {
                     <li>@goal.Name</li>
-                }    
+                }
             </ul>
         </div>
-            
+
         <div class="form-group">
             <label for="projectAssignee">Ответственный</label>
-            <input id="projectAssignee" 
-                   readonly class="form-control" 
+            <input id="projectAssignee"
+                   readonly class="form-control"
                    value="@UserUnitService.GetOrganizationUnit(SelectedProject.UnitId).Name">
         </div>
-        
+
         <div class="form-group">
             <label for="projectAssignee">Задачи</label>
             <div class="list-group">
                 @foreach (var task in SelectedProject.Tasks)
                 {
-                    <div class="form-row">
-                        <div class="col-1">
-                            <input disabled="true" class="form-control form-control-sm" type="checkbox" checked="@task.Done">
+                    // dislpay only avaliable tasks
+                    @if (UserUnitService.GetOrganizationUnit(task.UnitId) != null)
+                    {
+                        <div class="form-group border p-1 m-1">
+                            <div class="form-row">
+                                <div class="col-1">
+                                    <input disabled="true" class="form-control form-control-sm" type="checkbox" checked="@task.Done">
+                                </div>
+                                <div class="col-6">
+                                    <input readonly class="form-control" value="@task.Name">
+                                </div>
+                                <div class="col-5">
+                                    <input readonly class="form-control"
+                                           value="@UserUnitService.GetOrganizationUnit(task.UnitId).Name">
+                                </div>
+                            </div>
+                            <div class="form-row mb-1 mt-1">
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success"
+                                            @onclick="(() => CreateProjectFromTask(task))">
+                                        Создать проект на основе задачи
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success"
+                                            @onclick="(() => AddTaskToProject(task))">
+                                        Добавить в своей проект
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <input readonly class="form-control" value="@task.Name">
-                        </div>
-                        <div class="col-5">
-                            <input readonly class="form-control"
-                                   value="@UserUnitService.GetOrganizationUnit(task.UnitId).Name">
-                        </div>
-                    </div>
+                    }
                 }
             </div>
         </div>
-        
-        <div class="form-group">
+
+        <div class="form-group border p-1 m-1">
             <div class="row">
                 <div class="col">
-                    <button class="btn btn-sm btn-outline-success" @onclick="AddBacklog">Создать бэклог на основе проекта</button>
+                    <button class="btn btn-outline-success" @onclick="AddBacklog">Создать бэклог на основе проекта</button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-success"
+                            disabled="@(SelectedBacklogDefinition == null)"
+                            @onclick="AddProjectToBacklog">
+                        Добавить проект к себе
+                    </button>
+                </div>
+                <div class="col">
+                    <UserBacklogsDropdown Unit="@CurrentUser" SelectObserver="@this"></UserBacklogsDropdown>
+                </div>
+                <div class="col">
+                    <UserProjectsDropdown SelectObserver="@this" SelectedBacklog="@SelectedBacklog"></UserProjectsDropdown>
                 </div>
             </div>
         </div>
@@ -63,37 +98,5 @@
 }
 
 @code {
-    [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
-    [Parameter] public Project SelectedProject { get; set; }
-    [Parameter] public OrganizationUnit SelectedUnit { get; set; }
 
-    private string NewBacklogName { get; set; }
-
-    
-    protected async Task AddBacklog()
-    {
-        var copiedBacklog = await UserUnitService.CreateBacklog(SelectedUnit, SelectedProject.Name);
-        var projectInBacklog = await BacklogService.
-            CreateProjectInBacklog(SelectedProject.Name, copiedBacklog, SelectedUnit);
-        var project = await CopyProjectData(projectInBacklog.Item2);
-        
-        await BacklogService.UpdateProject(project);
-        await SelectObserver.Select(project);
-        StateHasChanged();
-        
-        async Task<Project>  CopyProjectData(Project project)
-        {
-            foreach (var task in SelectedProject.Tasks)
-                await BacklogService.CreateTaskInProject(project, task.Name, UserUnitService.GetOrganizationUnit(task.UnitId));
-
-            foreach (var goal in SelectedProject.Goals)
-                await BacklogService.AddProjectGoal(project, goal.Id, goal.Name);
-            
-            var tasksToCopy = SelectedProject.Tasks.ToArray();
-            for (var i = 0 ; i < project.Tasks.Count();i++)
-                project.Tasks.ToArray()[i].Done = tasksToCopy[i].Done;
-            
-            return project;
-        }
-    }
 }

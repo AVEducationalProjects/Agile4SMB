@@ -1,0 +1,47 @@
+﻿@using Agile4SMB.Client.Utils
+@using Agile4SMB.Shared.Domain
+@using Task = System.Threading.Tasks.Task
+@using Agile4SMB.Client.Services
+@inject BacklogService BacklogService;
+
+@if (SelectedBacklog != null)
+{
+    <div class="form-group">
+        <select class="form-control" @bind="SelectedProjectId">
+            @foreach (var (id, name) in _projects)
+            {
+                <option value=@id>@name</option>
+            }
+        </select>
+    </div>
+}
+
+@code {
+    [Parameter] public ISelectObserver<Project> SelectObserver { get; set; }
+
+    [Parameter] public Backlog SelectedBacklog { get; set; }
+
+
+    private IEnumerable<(Guid id, string name)> _projects;
+
+    private Guid _selectedProjectId;
+    private Guid SelectedProjectId
+    {
+        get => _selectedProjectId;
+        set
+        {
+            _selectedProjectId = value;
+            var project = SelectedBacklog.Projects.Single(x => x.Id == _selectedProjectId);
+            SelectObserver.Select(project);
+        }
+    }
+
+    
+    protected override Task OnParametersSetAsync()
+    {
+        _projects = SelectedBacklog?.Projects?.Select(x => (id: x.Id, name: x.Name));
+        _selectedProjectId = SelectObserver.Item?.Id ?? (_projects?.FirstOrDefault().id ?? new Guid());
+        return base.OnParametersSetAsync();
+    }
+
+}

@@ -24,6 +24,13 @@ namespace Agile4SMB.Server.Repositories
             _accountCollection = database.GetCollection<Account>(mongoOptions.Value.AccountCollection);
         }
 
+        public OrganizationUnit GetOwner(Guid backlogId)
+        {
+            return _organizationUnitCollection.FindSync(_ => true)
+                .Single()
+                .FindWithBacklog(backlogId);
+        }
+        
         public OrganizationUnit Get(string username) => 
             _organizationUnitCollection.FindSync(_=>true)
                 .Single()

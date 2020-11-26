@@ -4,44 +4,46 @@
 @inject UserUnitService UserUnitService
 @inject BacklogService BacklogService;
 
-@if (_projects != null)
+@if (SelectedUnit != null)
 {
     <div class="list-group">
         @foreach (var project in _projects)
         {
             <div @onclick="@(e => { ProjectSelectObserver.Select(project); })"
-                class="list-group-item selectable list-group-item-action @(project.Id == ProjectSelectObserver.Item?.Id?"active":"")">
-                
+                  class="list-group-item selectable list-group-item-action @(project.Id == ProjectSelectObserver.Item?.Id ? "active" : "")">
+
                 <div class="d-flex w-100 justify-content-between">
-                    <small>@GetBacklogInfo(project)</small>
                     <small class="badge badge-pill badge-light">@project.StringState.ToLower()</small>
                 </div>
                 <p class="mb-1 pt-2">@project.Name</p>
             </div>
-        }    
+        }
     </div>
 }
 
 @code {
+
     [Parameter] public OrganizationUnit SelectedUnit { get; set; }
+
     [Parameter] public ISelectObserver<Project> ProjectSelectObserver { get; set; }
-    private IEnumerable<(Guid id, string name, string unit)> BacklogList { get; set; }
-    
-    
-    private string GetBacklogInfo(Project project)
-    {
-        var (_, name, unit) = BacklogList.ToList().Find(x => x.id == project.BacklogId);
-        return $"Бэклог: {name} ({unit})";
-    }
+
+    [Parameter] public OrganizationUnit CurrentUser { get; set; }
+
+
     private IEnumerable<Project> _projects;
+
 
     protected override async Task OnParametersSetAsync()
     {
-        
-        var orgUnit = UserUnitService.GetOrganizationUnits().FirstOrDefault();
-        BacklogList = orgUnit?.GetAvailableBacklogs()?
-            .Select(x => (id: x.backlog.Id, name: x.backlog.Name, unit: x.unit.Name));
-        var unit = SelectedUnit ?? orgUnit;
-        _projects = await UserUnitService.GetUnitProjects(unit.Id);
+        _projects = await UserUnitService.GetUnitProjects(CurrentUser!.Id);
+
+        var selection = new List<Project>();
+        foreach (var project in _projects)
+        {
+            var owner = await BacklogService.GetOwner(project.BacklogId);
+            if (owner.Id == SelectedUnit.Id) {selection.Add(project);}
+        }
+        _projects = selection;
     }
+
 }

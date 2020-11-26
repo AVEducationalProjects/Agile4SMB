@@ -20,6 +20,14 @@ namespace Agile4SMB.Server.Controllers
             _organizationUnitRepository = organizationUnitRepository;
         }
 
+        
+        [HttpGet("{backlogId}")]
+        public ActionResult<OrganizationUnit> Get(Guid backlogId)
+        {
+            return Ok(_organizationUnitRepository.GetOwner(backlogId));
+        }
+
+        
         [HttpGet(Name = "Organization")]
         public ActionResult<OrganizationUnit> Get()
         {
