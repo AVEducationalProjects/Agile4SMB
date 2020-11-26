@@ -41,7 +41,7 @@
         foreach (var project in _projects)
         {
             var owner = await BacklogService.GetOwner(project.BacklogId);
-            if (owner.Id == SelectedUnit.Id) {selection.Add(project);}
+            if (owner.Id == SelectedUnit?.Id) {selection.Add(project);}
         }
         _projects = selection;
     }
